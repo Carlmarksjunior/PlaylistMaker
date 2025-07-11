@@ -34,7 +34,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="@dimen/marginTop"
         android:weightSum="1">
         <TextView
             android:layout_width="wrap_content"
@@ -42,7 +42,7 @@
             android:layout_weight="1"
             android:text="@string/dark_theme"
             android:textColor="@color/black0"
-            android:textSize="16sp"
+            android:textSize="@dimen/medium_textSize"
             android:layout_gravity="center"
             android:gravity="start"/>
         <Switch
@@ -67,7 +67,7 @@
             android:layout_weight="1"
             android:text="@string/share_app"
             android:textColor="@color/black0"
-            android:textSize="16sp"
+            android:textSize="@dimen/medium_textSize"
             android:layout_gravity="center"/>
 
         <Button
@@ -86,14 +86,14 @@
         android:layout_height="wrap_content"
         android:weightSum="1"
         android:paddingRight="12dp"
-        android:layout_marginTop="24dp">
+        android:layout_marginTop="@dimen/marginTop">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/write_to_support"
             android:textColor="@color/black0"
-            android:textSize="16sp"
+            android:textSize="@dimen/medium_textSize"
             android:layout_gravity="center"/>
 
         <Button
@@ -111,7 +111,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="@dimen/marginTop"
         android:weightSum="1"
         android:paddingRight="12dp">
         <TextView
@@ -120,7 +120,7 @@
             android:layout_weight="1"
             android:text="@string/user_argeement"
             android:textColor="@color/black0"
-            android:textSize="16sp"
+            android:textSize="@dimen/medium_textSize"
             android:layout_gravity="center"
             android:gravity="start"/>
 
