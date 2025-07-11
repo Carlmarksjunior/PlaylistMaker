@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="16dp"
     android:background="@color/white">
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,9 +14,12 @@
             android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="4dp"
             android:textColor="#1A1B22"
-            app:icon="@drawable/arrow"
-            app:iconTint="@color/blackYP"/>
+            app:icon="@drawable/ic_back_arrow_24"
+            app:iconTint="@color/blackYP"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -37,9 +38,10 @@
         android:layout_marginTop="@dimen/marginTop"
         android:weightSum="1">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="@dimen/marginSettings"
             android:text="@string/dark_theme"
             android:textColor="@color/black0"
             android:textSize="@dimen/medium_textSize"
@@ -48,23 +50,19 @@
         <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:switchMinWidth="0dp"
-            android:switchPadding="0dp"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:padding="0dp"
-            android:gravity="end"/>
+            android:layout_marginEnd="6dp"
+            android:gravity="center"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:weightSum="1"
-        android:paddingRight="12dp">
+        android:weightSum="1">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="@dimen/marginSettings"
             android:text="@string/share_app"
             android:textColor="@color/black0"
             android:textSize="@dimen/medium_textSize"
@@ -75,22 +73,24 @@
             android:layout_height="wrap_content"
             android:minHeight="0dp"
             android:minWidth="0dp"
-            android:padding="0dp"
+            android:padding="4dp"
+            android:layout_marginEnd="12dp"
             android:backgroundTint="@color/white"
-            app:icon="@drawable/share_app"
+            app:icon="@drawable/ic_share_24"
             app:iconGravity="end"
-            app:iconTint="@color/gray" />
+            app:iconTint="@color/gray"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="1"
-        android:paddingRight="12dp"
         android:layout_marginTop="@dimen/marginTop">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="@dimen/marginSettings"
             android:text="@string/write_to_support"
             android:textColor="@color/black0"
             android:textSize="@dimen/medium_textSize"
@@ -101,23 +101,25 @@
             android:layout_height="wrap_content"
             android:minHeight="0dp"
             android:minWidth="0dp"
-            android:padding="0dp"
-            android:layout_gravity="right"
+            android:padding="2dp"
+            android:layout_marginEnd="12dp"
+            android:layout_gravity="end"
             android:backgroundTint="@color/white"
-            app:icon="@drawable/write_suppport"
+            app:icon="@drawable/ic_support_24"
             app:iconGravity="end"
-            app:iconTint="@color/gray" />
+            app:iconTint="@color/gray"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/marginTop"
-        android:weightSum="1"
-        android:paddingRight="12dp">
+        android:weightSum="1">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="@dimen/marginSettings"
             android:text="@string/user_argeement"
             android:textColor="@color/black0"
             android:textSize="@dimen/medium_textSize"
@@ -129,12 +131,14 @@
             android:layout_height="wrap_content"
             android:minHeight="0dp"
             android:minWidth="0dp"
-            android:padding="0dp"
-            android:layout_gravity="right"
+            android:padding="8dp"
+            android:layout_marginEnd="12dp"
+            android:layout_gravity="end"
             android:backgroundTint="@color/white"
-            app:icon="@drawable/charge"
+            app:icon="@drawable/ic_charge_24"
             app:iconGravity="end"
-            app:iconTint="@color/gray" />
+            app:iconTint="@color/gray"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
     </LinearLayout>
 </LinearLayout>
 
