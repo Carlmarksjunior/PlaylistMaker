@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         buttonSearch.setOnClickListener{
             val intent = Intent(this,SearchActivity::class.java)
             startActivity(intent)
+
         }
         //Реализация через лямбду
         val buttonMedia=findViewById<Button>(R.id.mediaButton)

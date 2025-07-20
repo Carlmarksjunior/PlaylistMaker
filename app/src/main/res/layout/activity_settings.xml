@@ -58,6 +58,7 @@
             android:text="@string/share_app" />
 
         <Button
+            android:id="@+id/shareApp"
             style="@style/settingButton"
             android:padding="4dp"
             app:icon="@drawable/ic_share_24" />
@@ -72,6 +73,7 @@
             android:text="@string/write_to_support"/>
 
         <Button
+            android:id="@+id/messageToSupport"
             style="@style/settingButton"
             android:padding="2dp"
             app:icon="@drawable/ic_support_24"/>
@@ -85,6 +87,7 @@
             style="@style/settingTv"
             android:text="@string/user_argeement" />
         <Button
+            android:id="@+id/buttonUserArgemeent"
             style="@style/settingButton"
             android:padding="8dp"
             app:icon="@drawable/ic_charge_24" />
