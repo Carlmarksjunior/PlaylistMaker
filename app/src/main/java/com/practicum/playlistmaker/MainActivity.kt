@@ -22,9 +22,7 @@ class MainActivity : AppCompatActivity() {
         buttonSearch.setOnClickListener{
             val intent = Intent(this,SearchActivity::class.java)
             startActivity(intent)
-
         }
-        //Реализация через лямбду
         val buttonMedia=findViewById<Button>(R.id.mediaButton)
         buttonMedia.setOnClickListener{
             val intent = Intent(this, MediaActivity::class.java)
