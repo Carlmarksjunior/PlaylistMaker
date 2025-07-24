@@ -12,6 +12,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 
 class SearchActivity : AppCompatActivity() {
     var editText: String? = EDIT_INPUT
@@ -41,24 +43,26 @@ class SearchActivity : AppCompatActivity() {
         }
 
 
-        val textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s.isNullOrEmpty()) {
-                    clearButton.visibility = View.GONE
-                } else {
-                    clearButton.visibility = View.VISIBLE
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
+//        val textWatcher = object : TextWatcher {
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//            }
+//
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                clearButton.isVisible = !s.isNullOrEmpty()
+//            }
+//
+//            override fun afterTextChanged(s: Editable?) {
+//                editText = s?.toString() ?:""
+//                Log.d(EDIT_TEXT,"$editText")
+//            }
+//        }
+        inputEditText.addTextChangedListener(
+            onTextChanged= {s,start,before,count->clearButton.isVisible = !s.isNullOrEmpty() },
+            afterTextChanged={s->
                 editText = s?.toString() ?:""
                 Log.d(EDIT_TEXT,"$editText")
             }
-        }
-        inputEditText.addTextChangedListener(textWatcher)
+        )
     }
 
     @SuppressLint("ServiceCast")

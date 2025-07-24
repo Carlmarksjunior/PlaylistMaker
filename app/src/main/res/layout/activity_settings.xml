@@ -34,66 +34,35 @@
             android:fontFamily="@font/ys_display_medium"/>
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.appcompat.widget.SwitchCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop"
-        android:weightSum="1">
-        <TextView
-            style="@style/settingTv"
-            android:text="@string/dark_theme" />
-        <androidx.appcompat.widget.SwitchCompat
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:gravity="center"
-            app:trackTint="?attr/colorOnSecondary"
-            app:thumbTint="?attr/colorSecondaryVariant"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="61dp"
+        android:text="@string/dark_theme"
         android:layout_marginTop="24dp"
-        android:weightSum="1">
-        <TextView
-            style="@style/settingTv"
-            android:text="@string/share_app" />
+        android:textAlignment="textStart"
+        android:layout_marginStart="@dimen/marginSettings"
+        android:textSize="@dimen/medium_textSize"
+        android:layout_marginEnd="12dp"
+        app:trackTint="?attr/colorOnSecondary"
+        app:thumbTint="?attr/colorSecondaryVariant"/>
+    <Button
+        android:id="@+id/shareApp"
+        style="@style/settingButton"
+        android:text="@string/share_app"
+        app:drawableEndCompat="@drawable/ic_share_24" />
 
-        <Button
-            android:id="@+id/shareApp"
-            style="@style/settingButton"
-            android:padding="4dp"
-            app:icon="@drawable/ic_share_24" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="1"
-        android:layout_marginTop="@dimen/marginTop">
-        <TextView
-            style="@style/settingTv"
-            android:text="@string/write_to_support"/>
-
-        <Button
-            android:id="@+id/messageToSupport"
-            style="@style/settingButton"
-            android:padding="2dp"
-            app:icon="@drawable/ic_support_24"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop"
-        android:weightSum="1">
-        <TextView
-            style="@style/settingTv"
-            android:text="@string/user_argeement" />
-        <Button
-            android:id="@+id/buttonUserArgemeent"
-            style="@style/settingButton"
-            android:padding="8dp"
-            app:icon="@drawable/ic_charge_24" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/messageToSupport"
+        style="@style/settingButton"
+        android:paddingEnd="2dp"
+        android:text="@string/write_to_support"
+        app:drawableEndCompat="@drawable/ic_support_24" />
+    <Button
+        android:id="@+id/buttonUserArgemeent"
+        style="@style/settingButton"
+        android:paddingEnd="8dp"
+        app:drawableEndCompat="@drawable/ic_charge_24"
+        android:text="@string/user_argeement"/>
 </LinearLayout>
 
 
