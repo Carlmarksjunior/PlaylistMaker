@@ -4,142 +4,65 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/white">
+    android:background="?attr/colorSecondary">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/backButton"
             android:layout_width="48dp"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
+            android:layout_height="48dp"
+            android:backgroundTint="?attr/colorSecondary"
             android:layout_marginTop="4dp"
             android:layout_marginStart="4dp"
-            android:textColor="#1A1B22"
             app:icon="@drawable/ic_back_arrow_24"
-            app:iconTint="@color/blackYP"
+            app:iconTint="?attr/colorOnPrimary"
             style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/settings"
-            android:textColor="@color/blackYP"
-            android:textSize="22sp"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="@dimen/well_textSize"
             android:textStyle="normal"
+            android:layout_marginTop="2dp"
             android:layout_marginStart="12dp"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="center"
+            android:fontFamily="@font/ys_display_medium"/>
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.appcompat.widget.SwitchCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop"
-        android:weightSum="1">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/marginSettings"
-            android:text="@string/dark_theme"
-            android:textColor="@color/black0"
-            android:textSize="@dimen/medium_textSize"
-            android:layout_gravity="center"
-            android:gravity="start"/>
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:gravity="center"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="61dp"
+        android:text="@string/dark_theme"
         android:layout_marginTop="24dp"
-        android:weightSum="1">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/marginSettings"
-            android:text="@string/share_app"
-            android:textColor="@color/black0"
-            android:textSize="@dimen/medium_textSize"
-            android:layout_gravity="center"/>
+        android:textAlignment="textStart"
+        android:layout_marginStart="@dimen/marginSettings"
+        android:textSize="@dimen/medium_textSize"
+        android:layout_marginEnd="12dp"
+        app:trackTint="?attr/colorOnSecondary"
+        app:thumbTint="?attr/colorSecondaryVariant"/>
+    <Button
+        android:id="@+id/shareApp"
+        style="@style/settingButton"
+        android:text="@string/share_app"
+        app:drawableEndCompat="@drawable/ic_share_24" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:padding="4dp"
-            android:layout_marginEnd="12dp"
-            android:backgroundTint="@color/white"
-            app:icon="@drawable/ic_share_24"
-            app:iconGravity="end"
-            app:iconTint="@color/gray"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="1"
-        android:layout_marginTop="@dimen/marginTop">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/marginSettings"
-            android:text="@string/write_to_support"
-            android:textColor="@color/black0"
-            android:textSize="@dimen/medium_textSize"
-            android:layout_gravity="center"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:padding="2dp"
-            android:layout_marginEnd="12dp"
-            android:layout_gravity="end"
-            android:backgroundTint="@color/white"
-            app:icon="@drawable/ic_support_24"
-            app:iconGravity="end"
-            app:iconTint="@color/gray"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginTop"
-        android:weightSum="1">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/marginSettings"
-            android:text="@string/user_argeement"
-            android:textColor="@color/black0"
-            android:textSize="@dimen/medium_textSize"
-            android:layout_gravity="center"
-            android:gravity="start"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:padding="8dp"
-            android:layout_marginEnd="12dp"
-            android:layout_gravity="end"
-            android:backgroundTint="@color/white"
-            app:icon="@drawable/ic_charge_24"
-            app:iconGravity="end"
-            app:iconTint="@color/gray"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
-    </LinearLayout>
+    <Button
+        android:id="@+id/messageToSupport"
+        style="@style/settingButton"
+        android:paddingEnd="2dp"
+        android:text="@string/write_to_support"
+        app:drawableEndCompat="@drawable/ic_support_24" />
+    <Button
+        android:id="@+id/buttonUserArgemeent"
+        style="@style/settingButton"
+        android:paddingEnd="8dp"
+        app:drawableEndCompat="@drawable/ic_charge_24"
+        android:text="@string/user_argeement"/>
 </LinearLayout>
 
 
