@@ -2,7 +2,7 @@
 <resources>
     <dimen name="medium_textSize">16sp</dimen>
     <dimen name="well_textSize">22sp</dimen>
-    <dimen name="marginTop">24sp</dimen>
+    <dimen name="marginTop">24dp</dimen>
     <dimen name="cornerRadius">16dp</dimen>
     <dimen name="marginSettings">16dp</dimen>
 </resources>

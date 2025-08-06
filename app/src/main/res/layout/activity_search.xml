@@ -65,6 +65,10 @@
             android:visibility="gone"
             android:layout_marginEnd="12dp"/>
     </FrameLayout>
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewTracks"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/marginTop"/>
 
     </LinearLayout>
