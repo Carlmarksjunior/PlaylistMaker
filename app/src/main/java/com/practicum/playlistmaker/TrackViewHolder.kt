@@ -3,7 +3,6 @@ package com.practicum.playlistmaker
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewParent
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +21,7 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
     fun bind (track: Track){
         Glide.with(itemView)
             .load(track.artworkUrl100)
-            .placeholder(R.drawable.placeholderartmusic)
+            .placeholder(R.drawable.ic_placeholder_45)
             .centerCrop()
             .transform(RoundedCorners(10))
             .into(artSong)

@@ -5,10 +5,10 @@
     tools:layout_marginTop="100dp"
     android:layout_height="61dp"
     android:orientation="horizontal"
-    android:paddingLeft="13dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:paddingRight="20dp">
+    android:paddingLeft="@dimen/paddingLeftTrack"
+    android:paddingTop="@dimen/paddingTopBottomTrack"
+    android:paddingBottom="@dimen/paddingTopBottomTrack"
+    android:paddingRight="@dimen/paddingRightTrack">
     <ImageView
         android:id="@+id/artSong"
         android:layout_width="45dp"
