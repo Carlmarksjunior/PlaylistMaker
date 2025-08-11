@@ -42,9 +42,7 @@
         android:textAlignment="textStart"
         android:layout_marginStart="@dimen/marginSettings"
         android:textSize="@dimen/medium_textSize"
-        android:layout_marginEnd="12dp"
-        app:trackTint="?attr/colorOnSecondary"
-        app:thumbTint="?attr/colorSecondaryVariant"/>
+        android:layout_marginEnd="12dp" />
     <Button
         android:id="@+id/shareApp"
         style="@style/settingButton"
