@@ -4,87 +4,161 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
+
 
 class SearchActivity : AppCompatActivity() {
     var editText: String? = EDIT_INPUT
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(EDIT_TEXT,editText)
+        outState.putString(EDIT_TEXT, editText)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        editText=savedInstanceState.getString(EDIT_TEXT, EDIT_INPUT)
+        editText = savedInstanceState.getString(EDIT_TEXT, EDIT_INPUT)
     }
-    private val trackList: ArrayList<Track> = arrayListOf(Track("Smells Like Teen Spirit",
-        "Nirvana",
-        "5:01",
-        "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"),
-        Track("Billie Jean",
-            "Michael Jackson",
-            "4:35",
-            "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"),
-        Track("Stayin' Alive",
-            "Bee Gees",
-            "4:10",
-            "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"),
-        Track("Whole Lotta Love",
-            "Led Zeppelin",
-            "5:33",
-            "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg"),
-        Track("Sweet Child O'Mine",
-            "Guns N' Roses",
-            "5:03",
-            "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"))
+
+    private val itunesBaseUrl = "https://itunes.apple.com/"
+    private val retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(itunesBaseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ItunesApi::class.java)
+    }
+    private lateinit var placeholderImage: ImageView
+    private lateinit var placeHolderTv: TextView
+    private lateinit var recyclerViewTracks: RecyclerView
+    private lateinit var adapter: AdapterTracks
+    private lateinit var buttonOnBackButton: Button
+    private lateinit var inputEditText: EditText
+    private lateinit var clearButton: ImageView
+    private lateinit var placeHolderButton: Button
+
+    private lateinit var lastQuery: String
+    private val trackList = mutableListOf<Track>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        val buttonOnBackButton = findViewById<Button>(R.id.backButtonInSearch)
+        placeholderImage = findViewById<ImageView>(R.id.image_place_holder)
+        placeHolderTv = findViewById<TextView>(R.id.tv_place_holder)
+        buttonOnBackButton = findViewById<Button>(R.id.backButtonInSearch)
+        recyclerViewTracks = findViewById<RecyclerView>(R.id.recyclerViewTracks)
+        inputEditText = findViewById<EditText>(R.id.edit_text_search)
+        clearButton = findViewById<ImageView>(R.id.clearIcon)
+        placeHolderButton = findViewById<Button>(R.id.button_place_holder)
+        inputEditText.setText(editText)
         buttonOnBackButton.setOnClickListener {
             finish()
         }
-        val inputEditText = findViewById<EditText>(R.id.edit_text_search)
-        inputEditText.setText(editText)
-        val clearButton = findViewById<ImageView>(R.id.clearIcon)
         clearButton.setOnClickListener {
             inputEditText.setText("")
             hideKeyboard()
             inputEditText.clearFocus()
+            trackList.clear()
+            visabilityGone()
+            adapter.notifyDataSetChanged()
         }
-
-
-//        val textWatcher = object : TextWatcher {
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//            }
-//
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                clearButton.isVisible = !s.isNullOrEmpty()
-//            }
-//
-//            override fun afterTextChanged(s: Editable?) {
-//                editText = s?.toString() ?:""
-//                Log.d(EDIT_TEXT,"$editText")
-//            }
-//        }
         inputEditText.addTextChangedListener(
-            onTextChanged= {s,start,before,count->clearButton.isVisible = !s.isNullOrEmpty() },
-            afterTextChanged={s->
-                editText = s?.toString() ?:""
-                Log.d(EDIT_TEXT,"$editText")
+            onTextChanged = { s, start, before, count ->
+                clearButton.isVisible = !s.isNullOrEmpty()
+            },
+            afterTextChanged = { s ->
+                editText = s?.toString() ?: ""
+                Log.d(EDIT_TEXT, "$editText")
             }
         )
-        val recyclerViewTracks= findViewById<RecyclerView>(R.id.recyclerViewTracks)
-        recyclerViewTracks.adapter = AdapterTracks(trackList)
-        recyclerViewTracks.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false)
+
+        adapter = AdapterTracks(trackList)
+        recyclerViewTracks.adapter = adapter
+        recyclerViewTracks.layoutManager = LinearLayoutManager(this)
+        inputEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                retrofitEnqueue(inputEditText.text.toString())
+                lastQuery = inputEditText.text.toString()
+                true
+            }
+            false
+        }
+        placeHolderButton.setOnClickListener {
+            retrofitEnqueue(lastQuery)
+        }
+    }
+
+    fun retrofitEnqueue(trackName: String) {
+        retrofit.search(trackName.trimStart())
+            .enqueue(object : Callback<ItunesResponse> {
+                override fun onResponse(
+                    call: Call<ItunesResponse?>,
+                    response: Response<ItunesResponse?>
+                ) {
+                    if (response.isSuccessful) {
+                        trackList.clear()
+                        if (response.body()?.results?.isNotEmpty() == true) {
+                            response.body()?.results?.let {
+                                tracks -> trackList.addAll(tracks)
+                            }
+                            visabilityGone()
+                            adapter.notifyDataSetChanged()
+                        } else if (trackList.isEmpty()) {
+                            showPlaceHolder(false)
+                        } else {
+                            showPlaceHolder(true)
+                        }
+                    } else {
+                        showPlaceHolder(true)
+                    }
+                }
+
+                override fun onFailure(call: Call<ItunesResponse?>, t: Throwable) {
+                    showPlaceHolder(true)
+                }
+            })
+    }
+
+    fun showPlaceHolder(disconnect: Boolean) {
+        if (disconnect) {
+            trackList.clear()
+            adapter.notifyDataSetChanged()
+            placeholderImage.setImageResource(R.drawable.ic_disconnect_120)
+            placeHolderTv.text = getString(R.string.disconnect_message)
+            placeholderImage.visibility = View.VISIBLE
+            placeHolderTv.visibility = View.VISIBLE
+            placeHolderButton.visibility = View.VISIBLE
+
+        } else {
+            trackList.clear()
+            adapter.notifyDataSetChanged()
+            placeholderImage.setImageResource(R.drawable.ic_not_search_result_120)
+            placeHolderTv.text = getString(R.string.result_is_empty)
+            placeholderImage.visibility = View.VISIBLE
+            placeHolderTv.visibility = View.VISIBLE
+        }
+    }
+
+    fun visabilityGone() {
+        placeHolderButton.visibility = View.GONE
+        placeholderImage.visibility = View.GONE
+        placeHolderTv.visibility = View.GONE
     }
 
     @SuppressLint("ServiceCast")
@@ -93,8 +167,13 @@ class SearchActivity : AppCompatActivity() {
             getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
     }
-    companion object{
+
+    companion object {
         const val EDIT_TEXT = "EDIT_TEXT"
         val EDIT_INPUT = null
     }
 }
+
+
+
+
