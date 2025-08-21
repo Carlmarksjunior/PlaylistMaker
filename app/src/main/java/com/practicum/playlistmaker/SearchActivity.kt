@@ -118,11 +118,14 @@ class SearchActivity : AppCompatActivity() {
                             visabilityGone()
                             adapter.notifyDataSetChanged()
                         } else if (trackList.isEmpty()) {
+                            visabilityGone()
                             showPlaceHolder(false)
                         } else {
+                            visabilityGone()
                             showPlaceHolder(true)
                         }
                     } else {
+                        visabilityGone()
                         showPlaceHolder(true)
                     }
                 }
