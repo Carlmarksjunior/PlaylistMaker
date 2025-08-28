@@ -8,5 +8,8 @@
     <dimen name="paddingLeftTrack">13dp</dimen>
     <dimen name="paddingTopBottomTrack">8dp</dimen>
     <dimen name="paddingRightTrack">20dp</dimen>
+    <dimen name="textSizePlaceHolder">19sp</dimen>
+    <dimen name="marginTop110">110dp</dimen>
+    <dimen name="smallTextSize14">14sp</dimen>
 
 </resources>
