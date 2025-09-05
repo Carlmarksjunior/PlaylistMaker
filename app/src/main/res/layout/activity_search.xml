@@ -71,15 +71,31 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_search_history"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="@dimen/marginTop32"
+            android:fontFamily="@font/ys_display_medium"
+            android:gravity="center"
+            android:text="@string/search_history"
+            android:textColor="@color/placeholderBack"
+            android:textSize="@dimen/textSizePlaceHolder"
+            android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewTracks"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/marginTop" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/marginTop8"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/image_place_holder"
@@ -90,40 +106,39 @@
             android:src="@drawable/ic_disconnect_120"
             android:visibility="gone" />
 
-    </FrameLayout>
+        <TextView
+            android:id="@+id/tv_place_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/marginSettings"
+            android:fontFamily="@font/ys_display_medium"
+            android:gravity="center"
+            android:textColor="@color/placeholderBack"
+            android:textSize="@dimen/textSizePlaceHolder"
+            android:visibility="gone" />
+        <Button
+            android:id="@+id/button_place_holder"
+            style="Widget.MaterialComponents.Button.UnelevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/placeholderBack"
+            android:fontFamily="@font/ys_display_medium"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:lines="1"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/placeholderText"
+            android:textSize="@dimen/smallTextSize14"
+            android:textStyle="normal"
+            android:visibility="gone"
+            app:cornerRadius="54dp" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_place_holder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/marginSettings"
-        android:fontFamily="@font/ys_display_medium"
-        android:gravity="center"
-        android:textColor="@color/placeholderBack"
-        android:textSize="@dimen/textSizePlaceHolder"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/button_place_holder"
-        style="Widget.MaterialComponents.Button.UnelevatedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="@dimen/marginTop"
-        android:backgroundTint="@color/placeholderBack"
-        android:fontFamily="@font/ys_display_medium"
-        android:insetLeft="0dp"
-        android:insetTop="0dp"
-        android:insetRight="0dp"
-        android:insetBottom="0dp"
-        android:text="@string/refresh"
-        android:lines="1"
-        android:textAllCaps="false"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/placeholderText"
-        android:textSize="@dimen/smallTextSize14"
-        android:textStyle="normal"
-        android:visibility="gone"
-        app:cornerRadius="54dp" />
 
 </LinearLayout>

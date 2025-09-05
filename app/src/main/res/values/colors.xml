@@ -15,4 +15,6 @@
     <color name="lightGray">#FFE6E8EB</color>
     <color name="placeholderBack">#FF1A1B22</color>
     <color name="placeholderText">#FFFFFFFF</color>
+    <color name="thumbTint">#FFAEAFB4</color>
+    <color name="trackTint">#FFE6E8EB</color>
 </resources>

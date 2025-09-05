@@ -5,16 +5,34 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.switchmaterial.SwitchMaterial
+
+
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var buttonOnBackButton: Button
+    private lateinit var buttonOnShareApp: Button
+    private lateinit var buttonMessageToSupport: Button
+    private lateinit var buttonUserArgement: Button
+
+    private lateinit var themeSwitcher: SwitchMaterial
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-        val buttonOnBackButton = findViewById<Button>(R.id.backButton)
+        buttonOnBackButton = findViewById<Button>(R.id.backButton)
         buttonOnBackButton.setOnClickListener {
             finish()
         }
-        val buttonOnShareApp = findViewById<Button>(R.id.shareApp)
+        themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+        val app = applicationContext as App
+        themeSwitcher.isChecked = app.darkTheme
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            app.switchTheme(checked)
+        }
+
+
+        buttonOnShareApp = findViewById<Button>(R.id.shareApp)
         buttonOnShareApp.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.setType("text/plain")
@@ -22,7 +40,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(shareIntent)
 
         }
-        val buttonMessageToSupport = findViewById<Button>(R.id.messageToSupport)
+        buttonMessageToSupport = findViewById<Button>(R.id.messageToSupport)
         buttonMessageToSupport.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SENDTO)
             shareIntent.data = Uri.parse("mailto:")
@@ -37,8 +55,8 @@ class SettingsActivity : AppCompatActivity() {
             shareIntent.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.message_to_mail))
             startActivity(shareIntent)
         }
-        val buttonUserArgeement = findViewById<Button>(R.id.buttonUserArgemeent)
-        buttonUserArgeement.setOnClickListener {
+        buttonUserArgement = findViewById<Button>(R.id.buttonUserArgemeent)
+        buttonUserArgement.setOnClickListener {
 
             val url = Uri.parse(resources.getString(R.string.practicum_offer))
             val intent = Intent(Intent.ACTION_VIEW, url)
