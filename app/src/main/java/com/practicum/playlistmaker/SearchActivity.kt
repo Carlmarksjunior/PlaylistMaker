@@ -1,8 +1,8 @@
 package com.practicum.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -45,14 +45,22 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderImage: ImageView
     private lateinit var placeHolderTv: TextView
     private lateinit var recyclerViewTracks: RecyclerView
-    private lateinit var adapter: AdapterTracks
+    lateinit var adapter: AdapterTracks
     private lateinit var buttonOnBackButton: Button
     private lateinit var inputEditText: EditText
     private lateinit var clearButton: ImageView
     private lateinit var placeHolderButton: Button
-
     private lateinit var lastQuery: String
+
+    private lateinit var tvSearchHistory: TextView
+
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var searchHistory: SearchHistory
+    private lateinit var listOfHistory: MutableList<Track>
+
+
     private val trackList = mutableListOf<Track>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +72,47 @@ class SearchActivity : AppCompatActivity() {
         inputEditText = findViewById<EditText>(R.id.edit_text_search)
         clearButton = findViewById<ImageView>(R.id.clearIcon)
         placeHolderButton = findViewById<Button>(R.id.button_place_holder)
+        tvSearchHistory = findViewById<TextView>(R.id.tv_search_history)
+        sharedPreferences = getSharedPreferences("music_history_prefs", MODE_PRIVATE)
+        searchHistory = SearchHistory(sharedPreferences)
+        listOfHistory = searchHistory.getSaveTracks().toMutableList()
+        adapter = AdapterTracks(trackList,searchHistory)
+        recyclerViewTracks.adapter = adapter
+        recyclerViewTracks.layoutManager= LinearLayoutManager(this)
+
+
         inputEditText.setText(editText)
+        inputEditText.addTextChangedListener(
+            onTextChanged = { s, start, before, count ->
+                clearButton.isVisible = !s.isNullOrEmpty()
+                if (inputEditText.hasFocus()&&inputEditText.text.isEmpty()){
+                    if (!listOfHistory.isNullOrEmpty()){
+                        handleTextAndFocusState()
+                    }
+                }
+            },
+            afterTextChanged = { s ->
+                editText = s?.toString() ?: ""
+            }
+        )
+        inputEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                retrofitEnqueue(inputEditText.text.toString())
+                lastQuery = inputEditText.text.toString()
+                true
+            }
+            false
+        }
+
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            if (inputEditText.hasFocus()&&inputEditText.text.isEmpty()){
+                if (!listOfHistory.isNullOrEmpty()){
+                    handleTextAndFocusState()
+                }
+            }
+
+        }
+
         buttonOnBackButton.setOnClickListener {
             finish()
         }
@@ -76,29 +124,20 @@ class SearchActivity : AppCompatActivity() {
             visabilityGone()
             adapter.notifyDataSetChanged()
         }
-        inputEditText.addTextChangedListener(
-            onTextChanged = { s, start, before, count ->
-                clearButton.isVisible = !s.isNullOrEmpty()
-            },
-            afterTextChanged = { s ->
-                editText = s?.toString() ?: ""
-                Log.d(EDIT_TEXT, "$editText")
-            }
-        )
 
-        adapter = AdapterTracks(trackList)
-        recyclerViewTracks.adapter = adapter
-        recyclerViewTracks.layoutManager = LinearLayoutManager(this)
-        inputEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                retrofitEnqueue(inputEditText.text.toString())
-                lastQuery = inputEditText.text.toString()
-                true
-            }
-            false
-        }
+
+
+
         placeHolderButton.setOnClickListener {
+            if (placeHolderButton.text == getString(R.string.refresh)){
             retrofitEnqueue(lastQuery)
+            }else if (placeHolderButton.text== getString(R.string.clear_history)){
+                searchHistory.clearHistory()
+                updateSearchHistory()
+                adapter.updateData(mutableListOf())
+                tvSearchHistory.visibility = View.GONE
+                placeHolderButton.visibility = View.GONE
+            }
         }
     }
 
@@ -112,10 +151,11 @@ class SearchActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         trackList.clear()
                         if (response.body()?.results?.isNotEmpty() == true) {
-                            response.body()?.results?.let {
-                                tracks -> trackList.addAll(tracks)
+                            response.body()?.results?.let { tracks ->
+                                trackList.addAll(tracks)
                             }
                             visabilityGone()
+                            recyclerViewTracks.visibility = View.VISIBLE
                             adapter.notifyDataSetChanged()
                         } else if (trackList.isEmpty()) {
                             visabilityGone()
@@ -131,6 +171,8 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<ItunesResponse?>, t: Throwable) {
+                    visabilityGone()
+                    adapter.notifyDataSetChanged()
                     showPlaceHolder(true)
                 }
             })
@@ -144,6 +186,7 @@ class SearchActivity : AppCompatActivity() {
             placeHolderTv.text = getString(R.string.disconnect_message)
             placeholderImage.visibility = View.VISIBLE
             placeHolderTv.visibility = View.VISIBLE
+            placeHolderButton.text = getString(R.string.refresh)
             placeHolderButton.visibility = View.VISIBLE
 
         } else {
@@ -157,11 +200,37 @@ class SearchActivity : AppCompatActivity() {
     }
 
     fun visabilityGone() {
+        recyclerViewTracks.visibility = View.GONE
+        tvSearchHistory.visibility = View.GONE
         placeHolderButton.visibility = View.GONE
         placeholderImage.visibility = View.GONE
         placeHolderTv.visibility = View.GONE
     }
+    private fun handleTextAndFocusState() {
+        updateSearchHistory()
+        val text = inputEditText.text.toString()
 
+        if (text.isEmpty()) {
+            if (!listOfHistory.isNullOrEmpty()) {
+                tvSearchHistory.visibility = View.VISIBLE
+                recyclerViewTracks.visibility = View.VISIBLE
+                adapter.updateData(listOfHistory)
+                placeHolderButton.text = getString(R.string.clear_history)
+                placeHolderButton.visibility = View.VISIBLE
+                adapter.notifyDataSetChanged()
+            } else {
+                visabilityGone()
+            }
+        } else {
+            placeHolderButton.text = getString(R.string.search)
+            placeHolderButton.visibility = View.VISIBLE
+            tvSearchHistory.visibility = View.GONE
+        }
+    }
+
+    private fun updateSearchHistory() {
+        listOfHistory = searchHistory.getSaveTracks().toMutableList() // ОБНОВЛЯЕМ историю
+    }
     @SuppressLint("ServiceCast")
     fun hideKeyboard() {
         val inputMethodManager =

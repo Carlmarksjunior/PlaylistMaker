@@ -8,7 +8,10 @@
     android:paddingLeft="@dimen/paddingLeftTrack"
     android:paddingTop="@dimen/paddingTopBottomTrack"
     android:paddingBottom="@dimen/paddingTopBottomTrack"
-    android:paddingRight="@dimen/paddingRightTrack">
+    android:paddingRight="@dimen/paddingRightTrack"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackgroundBorderless">
     <ImageView
         android:id="@+id/artSong"
         android:layout_width="45dp"

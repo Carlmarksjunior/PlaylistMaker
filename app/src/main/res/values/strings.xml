@@ -16,4 +16,6 @@
     <string name="disconnect_message">Проблемы со связью\n\nЗагрузка не удалась.Проверьте\nподключение к интернету</string>
     <string name="result_is_empty">Ничего не нашлось</string>
     <string name="refresh">Обновить</string>
+    <string name="search_history">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
 </resources>

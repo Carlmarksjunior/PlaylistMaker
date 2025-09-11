@@ -12,15 +12,17 @@ import java.util.Date
 import java.util.Locale
 
 class TrackViewHolder(parent: ViewGroup) :
-    RecyclerView.ViewHolder(LayoutInflater.from(parent.context)
-        .inflate(R.layout.item_track, parent, false)){
-    private val artSong : ImageView = itemView.findViewById<ImageView>(R.id.artSong)
+    RecyclerView.ViewHolder(
+        LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_track, parent, false)
+    ) {
+    private val artSong: ImageView = itemView.findViewById<ImageView>(R.id.artSong)
     private val trackName: TextView = itemView.findViewById<TextView>(R.id.trackName)
     private val artistName: TextView = itemView.findViewById<TextView>(R.id.artistName)
     private val trackTime: TextView = itemView.findViewById<TextView>(R.id.trackTime)
 
 
-    fun bind (track: Track){
+    fun bind(track: Track, searchHistory: SearchHistory) {
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.ic_placeholder_45)
@@ -32,5 +34,8 @@ class TrackViewHolder(parent: ViewGroup) :
         trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(
             Date(track.trackTimeMillis)
         )
+        itemView.setOnClickListener {
+            searchHistory.saveTrack(track)
+        }
     }
 }
