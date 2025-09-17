@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="smallTextSize13">13sp</dimen>
+    <dimen name="smallTextSize14">14sp</dimen>
     <dimen name="medium_textSize">16sp</dimen>
     <dimen name="well_textSize">22sp</dimen>
     <dimen name="marginTop8">8dp</dimen>
+    <dimen name="marginTop12">12dp</dimen>
     <dimen name="marginTop20">20dp</dimen>
     <dimen name="marginTop">24dp</dimen>
+    <dimen name="marginTop26">26dp</dimen>
+    <dimen name="marginTop28">28dp</dimen>
+    <dimen name="marginTop30">30dp</dimen>
     <dimen name="marginTop32">32dp</dimen>
+    <dimen name="marginTop52">52dp</dimen>
+    <dimen name="cornerRadius10">10dp</dimen>
     <dimen name="cornerRadius">16dp</dimen>
     <dimen name="marginSettings">16dp</dimen>
     <dimen name="paddingLeftTrack">13dp</dimen>
@@ -13,6 +21,6 @@
     <dimen name="paddingRightTrack">20dp</dimen>
     <dimen name="textSizePlaceHolder">19sp</dimen>
     <dimen name="marginTop110">110dp</dimen>
-    <dimen name="smallTextSize14">14sp</dimen>
+
 
 </resources>

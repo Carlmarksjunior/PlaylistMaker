@@ -22,7 +22,8 @@ class TrackViewHolder(parent: ViewGroup) :
     private val trackTime: TextView = itemView.findViewById<TextView>(R.id.trackTime)
 
 
-    fun bind(track: Track, searchHistory: SearchHistory) {
+
+    fun bind(track: Track, clickListener: (Track) -> Unit) {
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.ic_placeholder_45)
@@ -35,7 +36,8 @@ class TrackViewHolder(parent: ViewGroup) :
             Date(track.trackTimeMillis)
         )
         itemView.setOnClickListener {
-            searchHistory.saveTrack(track)
+            clickListener(track)
+
         }
     }
 }
