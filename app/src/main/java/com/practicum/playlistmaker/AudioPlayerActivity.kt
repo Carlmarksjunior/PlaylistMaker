@@ -1,20 +1,24 @@
 package com.practicum.playlistmaker
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.Group
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class AudioPlayerActivity() : AppCompatActivity() {
     private lateinit var backButton: ImageButton
-    private lateinit var trackName: String
     private lateinit var trackNameTv: TextView
-    private lateinit var artistName: String
+
     private lateinit var artistNameTv: TextView
     private lateinit var durationTv: TextView
     private lateinit var artSong: String
@@ -24,6 +28,7 @@ class AudioPlayerActivity() : AppCompatActivity() {
     private lateinit var collectionTv: TextView
     private lateinit var releaseDateTv: TextView
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
@@ -33,71 +38,70 @@ class AudioPlayerActivity() : AppCompatActivity() {
             finish()
         }
 
-        trackName = intent.getStringExtra("trackName").toString()
+        val track = intent.getParcelableExtra<Track>("track", Track::class.java)
         trackNameTv = findViewById<TextView>(R.id.trackName)
-        trackNameTv.text = trackName
+        trackNameTv.text = track?.trackName
 
-        artistName = intent.getStringExtra("artistName").toString()
         artistNameTv = findViewById<TextView>(R.id.artistName)
-        artistNameTv.text = artistName
+        artistNameTv.text = track?.artistName
 
-        val duration: String? = intent.getStringExtra("duration")
-        if (!duration.isNullOrEmpty()){
-            durationTv = findViewById<TextView>(R.id.durationValue)
-            durationTv.text = duration
-        }else{
+        val durationString = if (track?.trackTimeMillis != null) {
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(Date(track.trackTimeMillis))
+        } else {
+            null
+        }
+        durationTv = findViewById<TextView>(R.id.durationValue)
+        if (durationString != null) {
+            durationTv.text = durationString
+        } else {
             val durationGroup = findViewById<Group>(R.id.durationGroup)
             durationGroup.visibility = View.GONE
         }
 
-
-        artSong = intent.getStringExtra("artSongImage").toString()
-        artSong = artSong.replaceAfterLast('/', "512x512bb.jpg")
+        artSong = track?.artworkUrl100.toString().replaceAfterLast('/', "512x512bb.jpg")
         artSongImage = findViewById<ImageView>(R.id.artImage)
+        val radiusPx = resources.getDimensionPixelSize(R.dimen.cornerRadius10)
         Glide.with(this)
             .load(artSong)
             .placeholder(R.drawable.ic_placeholder_45)
             .centerCrop()
-            .transform(RoundedCorners(10))
+            .transform(RoundedCorners(radiusPx))
             .into(artSongImage)
 
-        val country: String? = intent.getStringExtra("country")
-        if (!country.isNullOrEmpty()){
+        if (!track?.country.isNullOrEmpty()) {
             countryTv = findViewById<TextView>(R.id.cityValue)
-            countryTv.text = country
-        }else{
+            countryTv.text = track.country
+        } else {
             val countryGroup = findViewById<Group>(R.id.cityGroup)
             countryGroup.visibility = View.GONE
         }
 
 
-        val genre: String? = intent.getStringExtra("genre")
-        if (!genre.isNullOrEmpty()){
+
+        if (!track?.primaryGenreName.isNullOrEmpty()) {
             genreTv = findViewById<TextView>(R.id.jenreValue)
-            genreTv.text = genre
-        }else{
+            genreTv.text = track.primaryGenreName
+        } else {
             val genreGroup = findViewById<Group>(R.id.jenreGroup)
             genreGroup.visibility = View.GONE
         }
 
 
 
-        var collection: String? = intent.getStringExtra("collection")
-        collectionTv = findViewById<TextView>(R.id.albumNameValue)
-        if (!collection.isNullOrEmpty()){
-            collectionTv.text = collection
-        }else{
+        if (!track?.collectionName.isNullOrEmpty()) {
+            collectionTv = findViewById<TextView>(R.id.albumNameValue)
+            collectionTv.text = track.collectionName
+        } else {
             val collectionGroup = findViewById<Group>(R.id.albomGroup)
             collectionGroup.visibility = View.GONE
         }
 
 
-        var releaseYear: String? = intent.getStringExtra("releaseDate")
-        if (!releaseYear.isNullOrEmpty()){
-            releaseYear = releaseYear.substring(0,4)
+
+        if (!track?.releaseDate.isNullOrEmpty()) {
             releaseDateTv = findViewById<TextView>(R.id.yearOfSongValue)
-            releaseDateTv.text = releaseYear
-        }else{
+            releaseDateTv.text = track.releaseDate.substring(0,4)
+        } else {
             val collectionGroup = findViewById<Group>(R.id.yearGroup)
             collectionGroup.visibility = View.GONE
         }

@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
@@ -76,7 +77,13 @@ class SearchActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences("music_history_prefs", MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPreferences)
         listOfHistory = searchHistory.getSaveTracks().toMutableList()
-        adapter = AdapterTracks(trackList,searchHistory)
+        adapter = AdapterTracks(trackList, { clickedTrack ->
+            searchHistory.saveTrack(clickedTrack)
+            val intent = Intent(this, AudioPlayerActivity::class.java).apply {
+                putExtra("track", clickedTrack)
+            }
+            startActivity(intent)
+        })
         recyclerViewTracks.adapter = adapter
         recyclerViewTracks.layoutManager= LinearLayoutManager(this)
 

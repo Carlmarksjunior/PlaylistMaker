@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -24,7 +23,7 @@ class TrackViewHolder(parent: ViewGroup) :
 
 
 
-    fun bind(track: Track, searchHistory: SearchHistory) {
+    fun bind(track: Track, clickListener: (Track) -> Unit) {
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.ic_placeholder_45)
@@ -37,19 +36,7 @@ class TrackViewHolder(parent: ViewGroup) :
             Date(track.trackTimeMillis)
         )
         itemView.setOnClickListener {
-            searchHistory.saveTrack(track)
-            val intent = Intent(itemView.context,
-                AudioPlayerActivity::class.java).apply {
-                    putExtra("trackName",track.trackName)
-                    putExtra("artistName", track.artistName)
-                    putExtra("duration",trackTime.text)
-                    putExtra("artSongImage",track.artworkUrl100)
-                    putExtra("country",track.country)
-                    putExtra("genre",track.primaryGenreName)
-                    putExtra("collectionName",track.collectionName)
-                    putExtra("releaseDate",track.releaseDate)
-            }
-            itemView.context.startActivity(intent)
+            clickListener(track)
 
         }
     }

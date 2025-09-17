@@ -13,6 +13,7 @@
     <dimen name="marginTop30">30dp</dimen>
     <dimen name="marginTop32">32dp</dimen>
     <dimen name="marginTop52">52dp</dimen>
+    <dimen name="cornerRadius10">10dp</dimen>
     <dimen name="cornerRadius">16dp</dimen>
     <dimen name="marginSettings">16dp</dimen>
     <dimen name="paddingLeftTrack">13dp</dimen>

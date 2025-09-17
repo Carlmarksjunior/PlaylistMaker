@@ -150,13 +150,20 @@
         app:layout_constraintStart_toStartOf="@id/leftGuideLine"
         app:layout_constraintTop_toBottomOf="@id/playStop"
         android:text="00:00" />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="duration,albumName,yearOfSong,jenre,city"
+        android:orientation="vertical"
+        app:barrierDirection="end"/>
 
     <TextView
         android:id="@+id/duration"
         style="@style/tvOnAudioPlayerLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Длительность"
+        android:text="@string/duration"
         android:layout_marginTop="@dimen/marginSettings"
         app:layout_constraintStart_toStartOf="@id/guideline16Left"
         app:layout_constraintTop_toBottomOf="@id/timeNow"/>
@@ -169,7 +176,9 @@
         android:layout_marginTop="@dimen/marginSettings"
         app:layout_constraintEnd_toEndOf="@id/guideline16Right"
         app:layout_constraintTop_toBottomOf="@id/timeNow"
-        tools:text="Длительность" />
+        app:layout_constraintStart_toStartOf="@id/barrier1"
+        app:layout_constraintHorizontal_bias="1"
+        tools:text="@string/duration" />
 
     <!-- Album -->
     <TextView
@@ -177,20 +186,23 @@
         style="@style/tvOnAudioPlayerLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Альбом"
+        android:text="@string/collection"
         android:layout_marginTop="@dimen/marginSettings"
         app:layout_constraintStart_toStartOf="@id/guideline16Left"
-        app:layout_constraintTop_toBottomOf="@id/duration"/>
+        app:layout_constraintTop_toBottomOf="@id/durationValue"/>
 
     <TextView
         android:id="@+id/albumNameValue"
         style="@style/tvOnAudioPlayerRight"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/marginSettings"
         app:layout_constraintEnd_toEndOf="@id/guideline16Right"
         app:layout_constraintTop_toBottomOf="@id/durationValue"
-        tools:text="Альбом" />
+        app:layout_constraintStart_toStartOf="@id/barrier1"
+        app:layout_constraintHorizontal_bias="1"
+        tools:text="@string/collection"
+        android:textAlignment="viewEnd"/>
 
     <!-- Year -->
     <TextView
@@ -198,10 +210,10 @@
         style="@style/tvOnAudioPlayerLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Год"
+        android:text="@string/releaseYear"
         android:layout_marginTop="@dimen/marginSettings"
         app:layout_constraintStart_toStartOf="@id/guideline16Left"
-        app:layout_constraintTop_toBottomOf="@id/albumName"/>
+        app:layout_constraintTop_toBottomOf="@id/albumNameValue"/>
 
     <TextView
         android:id="@+id/yearOfSongValue"
@@ -211,7 +223,9 @@
         android:layout_marginTop="@dimen/marginSettings"
         app:layout_constraintEnd_toEndOf="@id/guideline16Right"
         app:layout_constraintTop_toBottomOf="@id/albumNameValue"
-        tools:text="год" />
+        app:layout_constraintStart_toStartOf="@id/barrier1"
+        app:layout_constraintHorizontal_bias="1"
+        tools:text="@string/releaseYear" />
 
     <!-- Genre -->
     <TextView
@@ -219,10 +233,11 @@
         style="@style/tvOnAudioPlayerLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Жанр"
+        android:text="@string/jenre"
         android:layout_marginTop="@dimen/marginSettings"
         app:layout_constraintStart_toStartOf="@id/guideline16Left"
-        app:layout_constraintTop_toBottomOf="@id/yearOfSong"/>
+        app:layout_constraintTop_toBottomOf="@id/yearOfSongValue"
+        />
 
     <TextView
         android:id="@+id/jenreValue"
@@ -232,7 +247,9 @@
         android:layout_marginTop="@dimen/marginSettings"
         app:layout_constraintEnd_toEndOf="@id/guideline16Right"
         app:layout_constraintTop_toBottomOf="@id/yearOfSongValue"
-        tools:text="Жанр" />
+        app:layout_constraintStart_toStartOf="@id/barrier1"
+        app:layout_constraintHorizontal_bias="1"
+        tools:text="@string/jenre" />
 
     <!-- Country -->
     <TextView
@@ -240,11 +257,10 @@
         style="@style/tvOnAudioPlayerLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Страна"
+        android:text="@string/country"
         android:layout_marginTop="@dimen/marginSettings"
         app:layout_constraintStart_toStartOf="@id/guideline16Left"
-        app:layout_constraintTop_toBottomOf="@id/jenre"
-        app:layout_constraintBottom_toTopOf="@id/bottomGuideLine"
+        app:layout_constraintTop_toBottomOf="@id/jenreValue"
         app:layout_constraintVertical_bias="0"/>
 
     <TextView
@@ -255,9 +271,10 @@
         android:layout_marginTop="@dimen/marginSettings"
         app:layout_constraintEnd_toEndOf="@id/guideline16Right"
         app:layout_constraintTop_toBottomOf="@id/jenreValue"
-        app:layout_constraintBottom_toTopOf="@id/bottomGuideLine"
-        app:layout_constraintVertical_bias="0"
-        tools:text="Страна" />
+        app:layout_constraintStart_toStartOf="@id/barrier1"
+        app:layout_constraintHorizontal_bias="1"
+
+        tools:text="@string/country" />
 
 
 
