@@ -1,7 +1,10 @@
 package com.practicum.playlistmaker
 
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -18,7 +21,6 @@ import java.util.Locale
 class AudioPlayerActivity() : AppCompatActivity() {
     private lateinit var backButton: ImageButton
     private lateinit var trackNameTv: TextView
-
     private lateinit var artistNameTv: TextView
     private lateinit var durationTv: TextView
     private lateinit var artSong: String
@@ -27,6 +29,14 @@ class AudioPlayerActivity() : AppCompatActivity() {
     private lateinit var genreTv: TextView
     private lateinit var collectionTv: TextView
     private lateinit var releaseDateTv: TextView
+    private lateinit var playStop: ImageButton
+    private val handler: Handler = Handler(Looper.getMainLooper())
+    private lateinit var timerTv: TextView
+    private lateinit var timer: Runnable
+    private var playerState = STATE_DEFAULT
+    private lateinit var mediaPlayer: MediaPlayer
+
+    private var isPlayState = true
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,12 +48,22 @@ class AudioPlayerActivity() : AppCompatActivity() {
             finish()
         }
 
-        val track = intent.getParcelableExtra<Track>("track", Track::class.java)
+        timerTv = findViewById<TextView>(R.id.timeNow)
+        val track = intent.getParcelableExtra<Track>(TRACK_KEY)
+
         trackNameTv = findViewById<TextView>(R.id.trackName)
-        trackNameTv.text = track?.trackName
+        if (!track?.trackName.isNullOrEmpty()) {
+            trackNameTv.text = track.trackName
+        } else {
+            trackNameTv.visibility = View.GONE
+        }
 
         artistNameTv = findViewById<TextView>(R.id.artistName)
-        artistNameTv.text = track?.artistName
+        if (!track?.artistName.isNullOrEmpty()) {
+            artistNameTv.text = track.artistName
+        } else {
+            artistNameTv.visibility = View.GONE
+        }
 
         val durationString = if (track?.trackTimeMillis != null) {
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(Date(track.trackTimeMillis))
@@ -76,8 +96,6 @@ class AudioPlayerActivity() : AppCompatActivity() {
             countryGroup.visibility = View.GONE
         }
 
-
-
         if (!track?.primaryGenreName.isNullOrEmpty()) {
             genreTv = findViewById<TextView>(R.id.jenreValue)
             genreTv.text = track.primaryGenreName
@@ -85,8 +103,6 @@ class AudioPlayerActivity() : AppCompatActivity() {
             val genreGroup = findViewById<Group>(R.id.jenreGroup)
             genreGroup.visibility = View.GONE
         }
-
-
 
         if (!track?.collectionName.isNullOrEmpty()) {
             collectionTv = findViewById<TextView>(R.id.albumNameValue)
@@ -96,16 +112,79 @@ class AudioPlayerActivity() : AppCompatActivity() {
             collectionGroup.visibility = View.GONE
         }
 
-
-
         if (!track?.releaseDate.isNullOrEmpty()) {
             releaseDateTv = findViewById<TextView>(R.id.yearOfSongValue)
-            releaseDateTv.text = track.releaseDate.substring(0,4)
+            releaseDateTv.text = track.releaseDate.substring(0, 4)
         } else {
             val collectionGroup = findViewById<Group>(R.id.yearGroup)
             collectionGroup.visibility = View.GONE
         }
 
+        mediaPlayer = MediaPlayer()
+        if (!track?.previewUrl.isNullOrEmpty()){
+            preparePlayer(track.previewUrl)
+        }
 
+        playStop = findViewById<ImageButton>(R.id.playStop)
+        playStop.isEnabled= false
+        playStop.setOnClickListener {
+            if (isPlayState){
+                playStop.setImageResource(R.drawable.ic_stopplay_84)
+                mediaPlayer.start()
+                playerState = STATE_PLAYING
+                timer = Runnable{ timerTv.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+                    handler.postDelayed(timer, MUSIC_TIMER_DELAY)}
+                handler.postDelayed(timer, MUSIC_TIMER_DELAY)
+
+
+            }else{
+                playStop.setImageResource(R.drawable.ic_playstop_84)
+                mediaPlayer.pause()
+                playerState = STATE_PAUSED
+                handler.removeCallbacks ( timer )
+            }
+            isPlayState = !isPlayState
+        }
+    }
+
+    private fun preparePlayer(previewUrl: String){
+        mediaPlayer.setDataSource(previewUrl)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            playStop.isEnabled = true
+            playerState =STATE_PREPARED
+        }
+        mediaPlayer.setOnCompletionListener {
+            playStop.setImageResource(R.drawable.ic_playstop_84)
+            isPlayState = true
+            playerState = STATE_PREPARED
+            handler.removeCallbacksAndMessages(null)
+            timerTv.text = "00:00"
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mediaPlayer.pause()
+        handler.removeCallbacks ( timer )
+        isPlayState=true
+        playStop.setImageResource(R.drawable.ic_playstop_84)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+        handler.removeCallbacks ( timer )
+    }
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+
+        private const val MUSIC_TIMER_DELAY = 500L
+        const val TRACK_KEY = "track"
     }
 }
+
+

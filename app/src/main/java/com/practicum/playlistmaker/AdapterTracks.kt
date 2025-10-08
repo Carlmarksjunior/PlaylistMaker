@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker
 
+import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
@@ -7,6 +8,7 @@ class AdapterTracks(private val tracks: MutableList<Track>,
 
                     val clickListener: (Track) -> Unit): RecyclerView.Adapter<TrackViewHolder>() {
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateData(newTracks : List<Track>){
         tracks.clear()
         tracks.addAll(newTracks)

@@ -33,7 +33,7 @@ class TrackViewHolder(parent: ViewGroup) :
         trackName.text = track.trackName
         artistName.text = track.artistName
         trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(
-            Date(track.trackTimeMillis)
+            Date(track.trackTimeMillis!!)
         )
         itemView.setOnClickListener {
             clickListener(track)
