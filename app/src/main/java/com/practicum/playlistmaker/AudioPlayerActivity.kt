@@ -159,7 +159,7 @@ class AudioPlayerActivity() : AppCompatActivity() {
             isPlayState = true
             playerState = STATE_PREPARED
             handler.removeCallbacksAndMessages(null)
-            timerTv.text = "00:00"
+            timerTv.text =getString(R.string.reset_timer)
         }
     }
 

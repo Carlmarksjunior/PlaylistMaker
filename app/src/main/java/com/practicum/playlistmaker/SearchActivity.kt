@@ -65,7 +65,8 @@ class SearchActivity : AppCompatActivity() {
 
 
     private val trackList = mutableListOf<Track>()
-
+    private val searchRunnable = Runnable{retrofitEnqueue(inputEditText.text.toString())}
+    private val hideKeyboardRunnable = Runnable { hideKeyboard()}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +87,7 @@ class SearchActivity : AppCompatActivity() {
             searchHistory.saveTrack(clickedTrack)
             val intent = Intent(this, AudioPlayerActivity::class.java).apply {
                 if (clickDebounce()){
-                    putExtra("track", clickedTrack)
+                    putExtra(AudioPlayerActivity.TRACK_KEY, clickedTrack)
                 }
             }
             startActivity(intent)
@@ -268,8 +269,7 @@ class SearchActivity : AppCompatActivity() {
         }
         return current
     }
-    private val searchRunnable = Runnable{retrofitEnqueue(inputEditText.text.toString())}
-    private val hideKeyboardRunnable = Runnable { hideKeyboard()}
+
     private fun searchDebounce(){
         handler.removeCallbacks(searchRunnable)
         handler.removeCallbacks ( hideKeyboardRunnable )
