@@ -4,12 +4,15 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -58,10 +61,12 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var searchHistory: SearchHistory
     private lateinit var listOfHistory: MutableList<Track>
+    private lateinit var progressBar: ProgressBar
 
 
     private val trackList = mutableListOf<Track>()
-
+    private val searchRunnable = Runnable{retrofitEnqueue(inputEditText.text.toString())}
+    private val hideKeyboardRunnable = Runnable { hideKeyboard()}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,13 +79,16 @@ class SearchActivity : AppCompatActivity() {
         clearButton = findViewById<ImageView>(R.id.clearIcon)
         placeHolderButton = findViewById<Button>(R.id.button_place_holder)
         tvSearchHistory = findViewById<TextView>(R.id.tv_search_history)
+        progressBar = findViewById<ProgressBar>(R.id.progressBar)
         sharedPreferences = getSharedPreferences("music_history_prefs", MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPreferences)
         listOfHistory = searchHistory.getSaveTracks().toMutableList()
         adapter = AdapterTracks(trackList, { clickedTrack ->
             searchHistory.saveTrack(clickedTrack)
             val intent = Intent(this, AudioPlayerActivity::class.java).apply {
-                putExtra("track", clickedTrack)
+                if (clickDebounce()){
+                    putExtra(AudioPlayerActivity.TRACK_KEY, clickedTrack)
+                }
             }
             startActivity(intent)
         })
@@ -94,8 +102,13 @@ class SearchActivity : AppCompatActivity() {
                 clearButton.isVisible = !s.isNullOrEmpty()
                 if (inputEditText.hasFocus()&&inputEditText.text.isEmpty()){
                     if (!listOfHistory.isNullOrEmpty()){
+                        progressBar.visibility = View.GONE
                         handleTextAndFocusState()
                     }
+                }else{
+                    visabilityGone()
+                    progressBar.visibility = View.VISIBLE
+                    searchDebounce()
                 }
             },
             afterTextChanged = { s ->
@@ -156,6 +169,7 @@ class SearchActivity : AppCompatActivity() {
                     response: Response<ItunesResponse?>
                 ) {
                     if (response.isSuccessful) {
+                        progressBar.visibility = View.GONE
                         trackList.clear()
                         if (response.body()?.results?.isNotEmpty() == true) {
                             response.body()?.results?.let { tracks ->
@@ -178,6 +192,7 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<ItunesResponse?>, t: Throwable) {
+                    progressBar.visibility = View.GONE
                     visabilityGone()
                     adapter.notifyDataSetChanged()
                     showPlaceHolder(true)
@@ -236,7 +251,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun updateSearchHistory() {
-        listOfHistory = searchHistory.getSaveTracks().toMutableList() // ОБНОВЛЯЕМ историю
+        listOfHistory = searchHistory.getSaveTracks().toMutableList()
     }
     @SuppressLint("ServiceCast")
     fun hideKeyboard() {
@@ -244,10 +259,29 @@ class SearchActivity : AppCompatActivity() {
             getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
     }
+    private var isClickedAllowed = true
+    private val handler: Handler = Handler(Looper.getMainLooper())
+    private fun clickDebounce(): Boolean{
+        val current = isClickedAllowed
+        if (isClickedAllowed){
+            isClickedAllowed=false
+            handler.postDelayed({isClickedAllowed = true},CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
 
+    private fun searchDebounce(){
+        handler.removeCallbacks(searchRunnable)
+        handler.removeCallbacks ( hideKeyboardRunnable )
+        handler.postDelayed(searchRunnable,SEARCH_DEBOUNCE_DELAY)
+        handler.postDelayed(hideKeyboardRunnable,SEARCH_DEBOUNCE_DELAY)
+    }
     companion object {
         const val EDIT_TEXT = "EDIT_TEXT"
         val EDIT_INPUT = null
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+
     }
 }
 

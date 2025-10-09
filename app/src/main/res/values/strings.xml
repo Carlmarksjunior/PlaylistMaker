@@ -23,4 +23,5 @@
     <string name="releaseYear">Год</string>
     <string name="jenre">Жанр</string>
     <string name="country">Страна</string>
+    <string name="reset_timer">00:00</string>
 </resources>

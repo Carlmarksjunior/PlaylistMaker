@@ -124,8 +124,8 @@
         app:layout_constraintStart_toEndOf="@id/addAlbum"
         app:layout_constraintTop_toBottomOf="@id/artistName"
         android:layout_marginTop="@dimen/marginTop30"
-
-        app:srcCompat="@drawable/ic_playstop_84" />
+        app:srcCompat="@drawable/ic_playstop_84"
+        android:visibility="visible"/>
 
     <ImageButton
         android:id="@+id/favourite"
