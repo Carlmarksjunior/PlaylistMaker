@@ -1,16 +1,20 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.data.preference
 
-import android.content.SharedPreferences
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.practicum.playlistmaker.domain.models.Track
 
-
-class SearchHistory(private val sharedPreferences: SharedPreferences) {
+class SharedPreferenceManager(private val context: Context) {
     private val gson = Gson()
+    private val sharedPreferences = context.getSharedPreferences(HISTORY_KEY, Context.MODE_PRIVATE)
+    val sharedPreferencesSettings = context.getSharedPreferences(PLAY_LIST_MAKER_PREFERENCES, Context.MODE_PRIVATE)
 
 
     companion object {
         private const val HISTORY_KEY = "search_history"
+        private const val PLAY_LIST_MAKER_PREFERENCES = "Settings"
+        private const val SWITCH_MATERIAL_KEY = "key_for_switch_material"
     }
 
     fun getSaveTracks(): List<Track> {
@@ -44,5 +48,14 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
             .remove(HISTORY_KEY)
             .apply()
 
+    }
+
+    fun saveTheme(darkTheme: Boolean){
+        sharedPreferencesSettings.edit()
+            .putBoolean(SWITCH_MATERIAL_KEY,darkTheme)
+            .apply()
+    }
+    fun getTheme(): Boolean{
+        return sharedPreferencesSettings.getBoolean(SWITCH_MATERIAL_KEY,false)
     }
 }

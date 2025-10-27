@@ -1,8 +1,7 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui.tracks
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,12 +18,12 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.api.interactor.HistoryInteractor
+import com.practicum.playlistmaker.domain.api.interactor.TracksInteractor
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.ui.player.AudioPlayerActivity
 
 class SearchActivity : AppCompatActivity() {
     var editText: String? = EDIT_INPUT
@@ -38,14 +37,7 @@ class SearchActivity : AppCompatActivity() {
         editText = savedInstanceState.getString(EDIT_TEXT, EDIT_INPUT)
     }
 
-    private val itunesBaseUrl = "https://itunes.apple.com/"
-    private val retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(itunesBaseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ItunesApi::class.java)
-    }
+
     private lateinit var placeholderImage: ImageView
     private lateinit var placeHolderTv: TextView
     private lateinit var recyclerViewTracks: RecyclerView
@@ -54,20 +46,23 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var inputEditText: EditText
     private lateinit var clearButton: ImageView
     private lateinit var placeHolderButton: Button
-    private lateinit var lastQuery: String
 
     private lateinit var tvSearchHistory: TextView
 
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var searchHistory: SearchHistory
-    private lateinit var listOfHistory: MutableList<Track>
+    private lateinit var searchHistory: List<Track>
+    private var listOfHistory: MutableList<Track> = mutableListOf()
     private lateinit var progressBar: ProgressBar
 
+    val searchTrackInteractor: TracksInteractor = Creator.provideTracksInteractor()
+
+    private var lastQuery: String = ""
 
     private val trackList = mutableListOf<Track>()
     private val searchRunnable = Runnable{retrofitEnqueue(inputEditText.text.toString())}
     private val hideKeyboardRunnable = Runnable { hideKeyboard()}
-
+    private val historyInteractor: HistoryInteractor by lazy {
+        Creator.provideHistoryInteractor(this)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -80,14 +75,12 @@ class SearchActivity : AppCompatActivity() {
         placeHolderButton = findViewById<Button>(R.id.button_place_holder)
         tvSearchHistory = findViewById<TextView>(R.id.tv_search_history)
         progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        sharedPreferences = getSharedPreferences("music_history_prefs", MODE_PRIVATE)
-        searchHistory = SearchHistory(sharedPreferences)
-        listOfHistory = searchHistory.getSaveTracks().toMutableList()
+        searchHistory = historyInteractor.getSaveTracks()
         adapter = AdapterTracks(trackList, { clickedTrack ->
-            searchHistory.saveTrack(clickedTrack)
+            historyInteractor.saveTrack(clickedTrack)
             val intent = Intent(this, AudioPlayerActivity::class.java).apply {
-                if (clickDebounce()){
-                    putExtra(AudioPlayerActivity.TRACK_KEY, clickedTrack)
+                if (clickDebounce()) {
+                    putExtra(AudioPlayerActivity.Companion.TRACK_KEY, clickedTrack)
                 }
             }
             startActivity(intent)
@@ -126,6 +119,7 @@ class SearchActivity : AppCompatActivity() {
 
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
             if (inputEditText.hasFocus()&&inputEditText.text.isEmpty()){
+                updateSearchHistory()
                 if (!listOfHistory.isNullOrEmpty()){
                     handleTextAndFocusState()
                 }
@@ -150,9 +144,10 @@ class SearchActivity : AppCompatActivity() {
 
         placeHolderButton.setOnClickListener {
             if (placeHolderButton.text == getString(R.string.refresh)){
-            retrofitEnqueue(lastQuery)
+                lastQuery = inputEditText.text.toString()
+                retrofitEnqueue(lastQuery)
             }else if (placeHolderButton.text== getString(R.string.clear_history)){
-                searchHistory.clearHistory()
+                historyInteractor.clearHistory()
                 updateSearchHistory()
                 adapter.updateData(mutableListOf())
                 tvSearchHistory.visibility = View.GONE
@@ -162,43 +157,30 @@ class SearchActivity : AppCompatActivity() {
     }
 
     fun retrofitEnqueue(trackName: String) {
-        retrofit.search(trackName.trimStart())
-            .enqueue(object : Callback<ItunesResponse> {
-                override fun onResponse(
-                    call: Call<ItunesResponse?>,
-                    response: Response<ItunesResponse?>
-                ) {
-                    if (response.isSuccessful) {
-                        progressBar.visibility = View.GONE
-                        trackList.clear()
-                        if (response.body()?.results?.isNotEmpty() == true) {
-                            response.body()?.results?.let { tracks ->
-                                trackList.addAll(tracks)
-                            }
-                            visabilityGone()
-                            recyclerViewTracks.visibility = View.VISIBLE
-                            adapter.notifyDataSetChanged()
-                        } else if (trackList.isEmpty()) {
-                            visabilityGone()
-                            showPlaceHolder(false)
-                        } else {
-                            visabilityGone()
-                            showPlaceHolder(true)
-                        }
+        searchTrackInteractor.searchTracks(trackName, object : TracksInteractor.TracksConsumer {
+            override fun consume(foundTracks: List<Track>, isNetworkError: Boolean) {
+                runOnUiThread {
+                    progressBar.visibility = View.GONE
+                    trackList.clear()
+
+                    if (isNetworkError) {
+                        visabilityGone()
+                        adapter.notifyDataSetChanged()
+                        showPlaceHolder(true)
+                    } else if (foundTracks.isNotEmpty()) {
+                        trackList.addAll(foundTracks)
+                        visabilityGone()
+                        recyclerViewTracks.visibility = View.VISIBLE
+                        adapter.notifyDataSetChanged()
                     } else {
                         visabilityGone()
-                        showPlaceHolder(true)
+                        showPlaceHolder(false)
                     }
                 }
-
-                override fun onFailure(call: Call<ItunesResponse?>, t: Throwable) {
-                    progressBar.visibility = View.GONE
-                    visabilityGone()
-                    adapter.notifyDataSetChanged()
-                    showPlaceHolder(true)
-                }
-            })
+            }
+        })
     }
+
 
     fun showPlaceHolder(disconnect: Boolean) {
         if (disconnect) {
@@ -251,7 +233,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun updateSearchHistory() {
-        listOfHistory = searchHistory.getSaveTracks().toMutableList()
+        listOfHistory = historyInteractor.getSaveTracks().toMutableList()
     }
     @SuppressLint("ServiceCast")
     fun hideKeyboard() {
@@ -284,7 +266,3 @@ class SearchActivity : AppCompatActivity() {
 
     }
 }
-
-
-
-

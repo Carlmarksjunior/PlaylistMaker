@@ -1,6 +1,5 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui.player
 
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -14,8 +13,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.Group
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.api.interactor.AudioPlayerInteractor
+import com.practicum.playlistmaker.domain.models.Track
+import kotlinx.coroutines.Runnable
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 class AudioPlayerActivity() : AppCompatActivity() {
@@ -34,9 +37,10 @@ class AudioPlayerActivity() : AppCompatActivity() {
     private lateinit var timerTv: TextView
     private lateinit var timer: Runnable
     private var playerState = STATE_DEFAULT
-    private lateinit var mediaPlayer: MediaPlayer
 
     private var isPlayState = true
+    val mediaPlayer: AudioPlayerInteractor = Creator.provideAudioPlayerInteractor()
+
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,8 +69,8 @@ class AudioPlayerActivity() : AppCompatActivity() {
             artistNameTv.visibility = View.GONE
         }
 
-        val durationString = if (track?.trackTimeMillis != null) {
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(Date(track.trackTimeMillis))
+        val durationString = if (track?.duration != null) {
+            track.duration
         } else {
             null
         }
@@ -112,27 +116,41 @@ class AudioPlayerActivity() : AppCompatActivity() {
             collectionGroup.visibility = View.GONE
         }
 
-        if (!track?.releaseDate.isNullOrEmpty()) {
+        if (!track?.releaseYear.isNullOrEmpty()) {
             releaseDateTv = findViewById<TextView>(R.id.yearOfSongValue)
-            releaseDateTv.text = track.releaseDate.substring(0, 4)
+            releaseDateTv.text = track.releaseYear
         } else {
             val collectionGroup = findViewById<Group>(R.id.yearGroup)
             collectionGroup.visibility = View.GONE
         }
-
-        mediaPlayer = MediaPlayer()
-        if (!track?.previewUrl.isNullOrEmpty()){
-            preparePlayer(track.previewUrl)
-        }
-
         playStop = findViewById<ImageButton>(R.id.playStop)
         playStop.isEnabled= false
+        if (!track?.previewUrl.isNullOrEmpty()){
+            mediaPlayer.setDataSource(track.previewUrl)
+            mediaPlayer.prepareAsync()
+            mediaPlayer.setOnPreparedListener {
+                playStop.isEnabled = true
+                playerState = STATE_PREPARED
+            }
+            mediaPlayer.setOnCompletionListener {
+                playStop.setImageResource(R.drawable.ic_playstop_84)
+                isPlayState = true
+                playerState = STATE_PREPARED
+                handler.removeCallbacksAndMessages(null)
+                timerTv.text =getString(R.string.reset_timer)
+            }
+        }
+
+        timer = Runnable {
+            timerTv.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition())
+            handler.postDelayed(timer, MUSIC_TIMER_DELAY)
+        }
         playStop.setOnClickListener {
             if (isPlayState){
                 playStop.setImageResource(R.drawable.ic_stopplay_84)
-                mediaPlayer.start()
+                mediaPlayer.play()
                 playerState = STATE_PLAYING
-                timer = Runnable{ timerTv.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+                timer = Runnable{ timerTv.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition())
                     handler.postDelayed(timer, MUSIC_TIMER_DELAY)}
                 handler.postDelayed(timer, MUSIC_TIMER_DELAY)
 
@@ -144,22 +162,6 @@ class AudioPlayerActivity() : AppCompatActivity() {
                 handler.removeCallbacks ( timer )
             }
             isPlayState = !isPlayState
-        }
-    }
-
-    private fun preparePlayer(previewUrl: String){
-        mediaPlayer.setDataSource(previewUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playStop.isEnabled = true
-            playerState =STATE_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
-            playStop.setImageResource(R.drawable.ic_playstop_84)
-            isPlayState = true
-            playerState = STATE_PREPARED
-            handler.removeCallbacksAndMessages(null)
-            timerTv.text =getString(R.string.reset_timer)
         }
     }
 
@@ -186,5 +188,3 @@ class AudioPlayerActivity() : AppCompatActivity() {
         const val TRACK_KEY = "track"
     }
 }
-
-
