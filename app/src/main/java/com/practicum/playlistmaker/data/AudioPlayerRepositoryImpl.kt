@@ -4,8 +4,7 @@ import android.media.MediaPlayer
 import com.practicum.playlistmaker.domain.api.repository.AudioPlayerRepository
 
 
-class AudioPlayerRepositoryImpl : AudioPlayerRepository {
-    private val mediaPlayer: MediaPlayer by lazy { MediaPlayer() }
+class AudioPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : AudioPlayerRepository {
 
     override fun setDataSource(url: String) {
         mediaPlayer.setDataSource(url)

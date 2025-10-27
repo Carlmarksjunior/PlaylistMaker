@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
+import android.media.MediaPlayer
 import com.practicum.playlistmaker.data.AudioPlayerRepositoryImpl
 import com.practicum.playlistmaker.data.HistoryRepositoryImpl
 import com.practicum.playlistmaker.data.SupportSharingRepositoryImpl
@@ -39,7 +40,8 @@ object Creator {
     }
 
     private fun getAudioPlayerRepository(): AudioPlayerRepository{
-        return AudioPlayerRepositoryImpl()
+        val mediaPlayer = MediaPlayer()
+        return AudioPlayerRepositoryImpl(mediaPlayer)
     }
     fun provideAudioPlayerInteractor(): AudioPlayerInteractor{
         return AudioPlayerInteractorImpl(getAudioPlayerRepository())

@@ -5,43 +5,43 @@ import com.practicum.playlistmaker.domain.api.repository.AudioPlayerRepository
 
 
 class AudioPlayerInteractorImpl(
-    private val mediaPlayerRepository: AudioPlayerRepository,
+    private val audioPlayerRepository: AudioPlayerRepository,
 ): AudioPlayerInteractor {
     private var currentState: PlayerState = PlayerState.DEFAULT
 
     override fun setDataSource(url: String) {
-        mediaPlayerRepository.setDataSource(url)
+        audioPlayerRepository.setDataSource(url)
     }
 
     override fun prepareAsync() {
-        mediaPlayerRepository.prepareAsync()
+        audioPlayerRepository.prepareAsync()
         currentState = PlayerState.PREPARING
     }
 
     override fun setOnPreparedListener(listener: () -> Unit) {
-        mediaPlayerRepository.setOnPreparedListener(listener)
+        audioPlayerRepository.setOnPreparedListener(listener)
     }
 
     override fun setOnCompletionListener(listener: () -> Unit) {
-        mediaPlayerRepository.setOnCompletionListener(listener)
+        audioPlayerRepository.setOnCompletionListener(listener)
     }
 
     override fun play() {
-        mediaPlayerRepository.start()
+        audioPlayerRepository.start()
         currentState = PlayerState.PLAYING
     }
 
     override fun pause() {
-        mediaPlayerRepository.pause()
+        audioPlayerRepository.pause()
         currentState = PlayerState.PAUSED
     }
 
     override fun release() {
-        mediaPlayerRepository.release()
+        audioPlayerRepository.release()
         currentState = PlayerState.DEFAULT
     }
 
-    override fun getCurrentPosition(): Int = mediaPlayerRepository.getCurrentPosition()
+    override fun getCurrentPosition(): Int = audioPlayerRepository.getCurrentPosition()
 
     override fun getCurrentState(): PlayerState = currentState
 
