@@ -24,4 +24,5 @@
     <string name="jenre">Жанр</string>
     <string name="country">Страна</string>
     <string name="reset_timer">00:00</string>
+    <string name="server_error">Ошибка сервера</string>
 </resources>
