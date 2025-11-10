@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.ui.player.activity
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -100,17 +101,20 @@ class PlayerActivity() : AppCompatActivity() {
 
 
         playerViewModel.observePlayerStateLiveData().observe(this) {
-            when (it) {
-                0 -> binding.playStop.isEnabled = false
-                1 -> binding.playStop.isEnabled = true
-                2 -> {
+            val state = StatePlayer.stateValue(it)
+            when (state) {
+                StatePlayer.STATE_DEFAULT -> binding.playStop.isEnabled = false
+                StatePlayer.STATE_PREPARED -> binding.playStop.isEnabled = true
+                StatePlayer.STATE_PLAYING -> {
                     binding.playStop.setImageResource(R.drawable.ic_stopplay_84)
 
                 }
 
-                3 -> {
+                StatePlayer.STATE_PAUSED -> {
                     binding.playStop.setImageResource(R.drawable.ic_playstop_84)
                 }
+
+                null -> Log.e("Player", "Неизвестное состояние: $it")
             }
         }
         binding.playStop.setOnClickListener {
@@ -130,4 +134,17 @@ class PlayerActivity() : AppCompatActivity() {
     companion object {
         const val TRACK_KEY = "track"
     }
+}
+enum class StatePlayer(val value: Int){
+    STATE_DEFAULT(0),
+    STATE_PREPARED(1),
+    STATE_PLAYING(2),
+    STATE_PAUSED(3);
+    companion object{
+        fun stateValue(value:Int): StatePlayer?{
+            return entries.find { it.value == value }
+        }
+    }
+
+
 }

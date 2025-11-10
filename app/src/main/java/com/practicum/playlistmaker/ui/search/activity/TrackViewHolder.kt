@@ -21,14 +21,14 @@ class TrackViewHolder(private val binding: ItemTrackBinding) :
         }
     }
 
-
+    private val radiusPx = dpToPx(10)
 
     fun bind(track: Track, clickListener: (Track) -> Unit) {
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.ic_placeholder_45)
             .centerCrop()
-            .transform(RoundedCorners(10))
+            .transform(RoundedCorners(radiusPx))
             .into(binding.artSong)
         binding.trackName.text = track.trackName
         binding.artistName.text = track.artistName
@@ -38,4 +38,8 @@ class TrackViewHolder(private val binding: ItemTrackBinding) :
 
         }
     }
+    fun RecyclerView.ViewHolder.dpToPx(dp: Int): Int {
+        return (dp * itemView.context.resources.displayMetrics.density).toInt()
+    }
+
 }

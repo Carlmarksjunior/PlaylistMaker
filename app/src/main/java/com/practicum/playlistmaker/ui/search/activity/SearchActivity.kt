@@ -67,7 +67,7 @@ class SearchActivity : AppCompatActivity() {
         binding.recyclerViewTracks.layoutManager = LinearLayoutManager(this)
 
         viewModel =
-            ViewModelProvider(this, SearchViewModel.getFactory()).get(SearchViewModel::class.java)
+            ViewModelProvider(this, SearchViewModel.getFactory(context = this)).get(SearchViewModel::class.java)
 
         viewModel?.observeStateLiveData()?.observe(this) {
             render(it)
@@ -252,4 +252,5 @@ class SearchActivity : AppCompatActivity() {
             imagePlaceHolder.setImageResource(R.drawable.ic_not_search_result_120)
         }
     }
+
 }
