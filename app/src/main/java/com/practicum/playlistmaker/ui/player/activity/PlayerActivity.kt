@@ -6,14 +6,13 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.Group
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityAudioPlayerBinding
 import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerActivity() : AppCompatActivity() {
 
@@ -21,7 +20,7 @@ class PlayerActivity() : AppCompatActivity() {
     private lateinit var binding: ActivityAudioPlayerBinding
 
 
-    private lateinit var playerViewModel: PlayerViewModel
+    private val playerViewModel by viewModel<PlayerViewModel>()
 
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -30,29 +29,30 @@ class PlayerActivity() : AppCompatActivity() {
         binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val track = intent.getParcelableExtra<Track>(TRACK_KEY)
-        playerViewModel = ViewModelProvider(
-            this,
-            PlayerViewModel.getFactory(track?.previewUrl!!))
-            .get(PlayerViewModel::class.java)
+        if (!track?.previewUrl.isNullOrEmpty()){
+            playerViewModel.preparePlayer(track?.previewUrl?:"")
+            Log.e("fucc","${track?.previewUrl}")
+        }
+
         binding.menuButtonAudioPlayer.setOnClickListener {
             finish()
         }
 
 
 
-        if (!track.trackName.isNullOrEmpty()) {
+        if (!track?.trackName.isNullOrEmpty()) {
             binding.trackName.text = track.trackName
         } else {
             binding.trackName.visibility = View.GONE
         }
 
-        if (!track.artistName.isNullOrEmpty()) {
+        if (!track?.artistName.isNullOrEmpty()) {
             binding.artistName.text = track.artistName
         } else {
             binding.artistName.visibility = View.GONE
         }
 
-        val durationString = if (track.duration != null) {
+        val durationString = if (track?.duration != null) {
             track.duration
         } else {
             null
@@ -63,7 +63,7 @@ class PlayerActivity() : AppCompatActivity() {
             binding.durationGroup.visibility = View.GONE
         }
 
-        artSong = track.artworkUrl100.toString().replaceAfterLast('/', "512x512bb.jpg")
+        artSong = track?.artworkUrl100.toString().replaceAfterLast('/', "512x512bb.jpg")
         val radiusPx = resources.getDimensionPixelSize(R.dimen.cornerRadius10)
         Glide.with(this)
             .load(artSong)
@@ -72,26 +72,25 @@ class PlayerActivity() : AppCompatActivity() {
             .transform(RoundedCorners(radiusPx))
             .into(binding.artImage)
 
-        if (!track.country.isNullOrEmpty()) {
+        if (!track?.country.isNullOrEmpty()) {
             binding.cityValue.text = track.country
         } else {
             binding.cityGroup.visibility = View.GONE
         }
 
-        if (!track.primaryGenreName.isNullOrEmpty()) {
+        if (!track?.primaryGenreName.isNullOrEmpty()) {
             binding.jenreValue.text = track.primaryGenreName
         } else {
             binding.jenreGroup.visibility = View.GONE
         }
 
-        if (!track.collectionName.isNullOrEmpty()) {
+        if (!track?.collectionName.isNullOrEmpty()) {
             binding.albumNameValue.text = track.collectionName
         } else {
-            val collectionGroup = findViewById<Group>(R.id.albomGroup)
-            collectionGroup.visibility = View.GONE
+            binding.albomGroup.visibility = View.GONE
         }
 
-        if (!track.releaseYear.isNullOrEmpty()) {
+        if (!track?.releaseYear.isNullOrEmpty()) {
             binding.yearOfSongValue.text = track.releaseYear
         } else {
             binding.yearGroup.visibility = View.GONE

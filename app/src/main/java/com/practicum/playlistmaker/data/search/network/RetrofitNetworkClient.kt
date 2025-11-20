@@ -6,16 +6,9 @@ import android.net.NetworkCapabilities
 import com.practicum.playlistmaker.data.search.NetworkClient
 import com.practicum.playlistmaker.data.search.dto.Response
 import com.practicum.playlistmaker.data.search.dto.TrackSearchRequest
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitNetworkClient(private val context: Context): NetworkClient {
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(ITUNES_BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+class RetrofitNetworkClient(private val context: Context,private val itunesApiService: ItunesApiService): NetworkClient {
 
-    private val itunesService = retrofit.create(ItunesApiService::class.java)
 
     override fun doRequest(dto: Any): Response {
         if (isConnected() == false){
@@ -24,7 +17,7 @@ class RetrofitNetworkClient(private val context: Context): NetworkClient {
         if (dto!is TrackSearchRequest){
             return Response().apply { resultCode = 400 }
         }
-        val resp = itunesService.search(dto.expression).execute()
+        val resp = itunesApiService.search(dto.expression).execute()
         val body = resp.body()
         return if (body != null) {
             body.apply { resultCode = resp.code() }
@@ -45,7 +38,5 @@ class RetrofitNetworkClient(private val context: Context): NetworkClient {
         }
         return false
     }
-    companion object{
-        private const val ITUNES_BASE_URL = "https://itunes.apple.com/"
-    }
+
 }
