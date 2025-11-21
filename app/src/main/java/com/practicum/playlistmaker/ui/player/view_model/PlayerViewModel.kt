@@ -5,29 +5,19 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.domain.player.AudioPlayerInteractor
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerViewModel(private val url: String) : ViewModel() {
+class PlayerViewModel(private val mediaPlayer: AudioPlayerInteractor) : ViewModel() {
     companion object {
         private const val STATE_DEFAULT = 0
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
         private const val MUSIC_TIMER_DELAY = 200L
-        fun getFactory(value: String): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(value)
-            }
-        }
-    }
 
-    private val mediaPlayer: AudioPlayerInteractor = Creator.provideAudioPlayerInteractor()
+    }
 
     private val handler = Handler(Looper.getMainLooper())
     private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
@@ -48,11 +38,9 @@ class PlayerViewModel(private val url: String) : ViewModel() {
         handler.postDelayed(timerRunnable, MUSIC_TIMER_DELAY)
     }
 
-    init {
-        preparePlayer()
-    }
 
-    fun preparePlayer() {
+
+    fun preparePlayer(url: String) {
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {

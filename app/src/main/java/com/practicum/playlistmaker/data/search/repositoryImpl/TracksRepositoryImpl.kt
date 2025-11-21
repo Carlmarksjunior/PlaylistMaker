@@ -26,14 +26,14 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient,private val 
                         it.trackName,
                         it.artistName,
                         SimpleDateFormat("mm:ss", Locale.getDefault())
-                            .format(Date(it.trackTimeMillis)),
+                            .format(Date(it.trackTimeMillis!!)),
                         it.artworkUrl100,
                         it.previewUrl,
                         it.trackId,
                         it.country,
                         it.primaryGenreName,
                         it.collectionName,
-                        it.releaseDate.substring(0, 4)
+                        it.releaseDate?.substring(0, 4)?: ""
                     )
                 })
             }

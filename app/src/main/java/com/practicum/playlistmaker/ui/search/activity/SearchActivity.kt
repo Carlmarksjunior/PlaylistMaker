@@ -10,7 +10,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
@@ -18,6 +17,7 @@ import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.ui.player.activity.PlayerActivity
 import com.practicum.playlistmaker.ui.search.state.TrackState
 import com.practicum.playlistmaker.ui.search.view_model.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     companion object {
@@ -42,7 +42,7 @@ class SearchActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchBinding
 
-    private var viewModel: SearchViewModel? = null
+    private val searchViewModel by viewModel<SearchViewModel>()
 
     private lateinit var textWatcher: TextWatcher
 
@@ -53,7 +53,7 @@ class SearchActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         adapter = AdapterTracks({ clickedTrack ->
-            viewModel?.saveTrack(clickedTrack)
+            searchViewModel.saveTrack(clickedTrack)
             val intent = Intent(this, PlayerActivity::class.java).apply {
                 if (clickDebounce()) {
                     putExtra(PlayerActivity.Companion.TRACK_KEY, clickedTrack)
@@ -66,15 +66,13 @@ class SearchActivity : AppCompatActivity() {
         binding.recyclerViewTracks.adapter = adapter
         binding.recyclerViewTracks.layoutManager = LinearLayoutManager(this)
 
-        viewModel =
-            ViewModelProvider(this, SearchViewModel.getFactory(context = this)).get(SearchViewModel::class.java)
 
-        viewModel?.observeStateLiveData()?.observe(this) {
+        searchViewModel.observeStateLiveData().observe(this) {
             render(it)
         }
-        viewModel?.observeHistoryLiveData()?.observe(this){
+        searchViewModel.observeHistoryLiveData().observe(this){
             adapter.searchHistory.clear()
-            adapter.searchHistory?.addAll(it)
+            adapter.searchHistory.addAll(it)
         }
 
 
@@ -110,12 +108,12 @@ class SearchActivity : AppCompatActivity() {
 
 
                 }
-                viewModel?.searchDebounce(
+                searchViewModel.searchDebounce(
                     changedText = s?.toString() ?: ""
                 )
             }
         }
-        textWatcher?.let { binding.editTextSearch.addTextChangedListener(it) }
+        textWatcher.let { binding.editTextSearch.addTextChangedListener(it) }
 
         binding.editTextSearch.setOnFocusChangeListener { view, hasFocus ->
             if (binding.editTextSearch.hasFocus() && binding.editTextSearch.text.isEmpty()) {
@@ -139,9 +137,9 @@ class SearchActivity : AppCompatActivity() {
             }
             binding.buttonPlaceHolder.setOnClickListener {
                 if (binding.buttonPlaceHolder.text == getString(R.string.refresh)) {
-                    viewModel?.searchDebounce(binding.editTextSearch.text.toString())
+                    searchViewModel.searchDebounce(binding.editTextSearch.text.toString())
                 } else if (binding.buttonPlaceHolder.text == getString(R.string.clear_history)) {
-                    viewModel?.clearHistoryTracks()
+                    searchViewModel.clearHistoryTracks()
                     binding.recyclerViewTracks.visibility=View.GONE
                     binding.tvSearchHistory.visibility = View.GONE
                     binding.buttonPlaceHolder.visibility = View.GONE
