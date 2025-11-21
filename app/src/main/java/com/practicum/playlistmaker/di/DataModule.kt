@@ -12,47 +12,46 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class Companion(){
-    companion object{
-        const val PLAY_LIST_MAKER_PREFERENCES = "Settings"
-        const val HISTORY_KEY = "search_history"
-        const val ITUNES_BASE_URL = "https://itunes.apple.com/"
-
+val dataModule = module {
+    single<ItunesApiService> {
+        Retrofit.Builder()
+            .baseUrl(RetrofitNetworkClient.ITUNES_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ItunesApiService::class.java)
     }
+
+    factory<Gson> {
+        Gson()
+    }
+
+    single(named("sharedPreferencesHistory")) {
+        androidContext().getSharedPreferences(
+            SharedPreferenceManager.HISTORY_KEY,
+            Context.MODE_PRIVATE
+        )
+    }
+
+    single(named("sharedPreferencesSettings")) {
+        androidContext().getSharedPreferences(
+            SharedPreferenceManager.PLAY_LIST_MAKER_PREFERENCES,
+            Context.MODE_PRIVATE
+        )
+    }
+
+    single<NetworkClient> {
+        RetrofitNetworkClient(androidContext(), get())
+    }
+
+    single<SharedPreferenceManager> {
+        SharedPreferenceManager(
+            get(),
+            get(named("sharedPreferencesHistory")),
+            get(named("sharedPreferencesSettings"))
+        )
+    }
+
+
 }
-    val dataModule = module{
-        single<ItunesApiService>{
-            Retrofit.Builder()
-                .baseUrl(Companion.ITUNES_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ItunesApiService::class.java)
-        }
-
-        factory<Gson>{
-            Gson()
-        }
-
-        single(named("sharedPreferencesHistory")) {
-            androidContext().getSharedPreferences(Companion.HISTORY_KEY, Context.MODE_PRIVATE)
-        }
-
-        single(named("sharedPreferencesSettings")) {
-            androidContext().getSharedPreferences(Companion.PLAY_LIST_MAKER_PREFERENCES, Context.MODE_PRIVATE)
-        }
-
-        single<NetworkClient> {
-            RetrofitNetworkClient(androidContext(),get())
-        }
-
-        single<SharedPreferenceManager> {
-            SharedPreferenceManager(get(),
-                get(named("sharedPreferencesHistory")),
-                get(named("sharedPreferencesSettings")))
-        }
-
-
-
-    }
 
 

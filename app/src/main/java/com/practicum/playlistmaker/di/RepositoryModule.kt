@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.di
 
+import android.media.MediaPlayer
 import com.practicum.playlistmaker.data.player.AudioPlayerRepositoryImpl
 import com.practicum.playlistmaker.data.search.HistoryRepositoryImpl
 import com.practicum.playlistmaker.data.search.repositoryImpl.TracksRepositoryImpl
@@ -15,21 +16,25 @@ import org.koin.dsl.module
 
 val repositoryModule = module{
 
-    single<AudioPlayerRepository> {
-        AudioPlayerRepositoryImpl()
+    factory<MediaPlayer> {
+        MediaPlayer()
     }
 
-    single<HistoryRepository> {
+    factory<AudioPlayerRepository> {
+        AudioPlayerRepositoryImpl(MediaPlayer())
+    }
+
+    factory<HistoryRepository> {
         HistoryRepositoryImpl(get())
     }
 
-    single<TracksRepository> {
+    factory<TracksRepository> {
         TracksRepositoryImpl(get(),androidContext())
     }
-    single<SettingsRepository> {
+    factory<SettingsRepository> {
         ThemeRepositoryImpl(get())
     }
-    single<SharingRepository> {
+    factory<SharingRepository> {
         ExternalNavigatorImpl(get())
     }
 }

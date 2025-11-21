@@ -31,7 +31,6 @@ class PlayerActivity() : AppCompatActivity() {
         val track = intent.getParcelableExtra<Track>(TRACK_KEY)
         if (!track?.previewUrl.isNullOrEmpty()){
             playerViewModel.preparePlayer(track?.previewUrl?:"")
-            Log.e("fucc","${track?.previewUrl}")
         }
 
         binding.menuButtonAudioPlayer.setOnClickListener {

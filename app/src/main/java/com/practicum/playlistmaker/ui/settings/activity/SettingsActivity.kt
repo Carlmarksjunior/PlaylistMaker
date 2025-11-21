@@ -24,7 +24,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val app = applicationContext as App
         binding.themeSwitcher.isChecked = app.darkTheme
-        settingsViewModel.observerSettings().observe(this){
+        settingsViewModel.observerThemeLiveData().observe(this){
             app.darkTheme = it
             binding.themeSwitcher.isChecked = it
 

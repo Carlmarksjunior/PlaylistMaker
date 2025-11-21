@@ -11,6 +11,8 @@ class SharedPreferenceManager(private val gson: Gson,
 
 
     companion object {
+
+         const val PLAY_LIST_MAKER_PREFERENCES = "Settings"
          const val HISTORY_KEY = "search_history"
          const val SWITCH_MATERIAL_KEY = "key_for_switch_material"
     }

@@ -12,17 +12,17 @@ class SettingsViewModel(
     private val settingsInteractor: SettingsInteractor,
 ): ViewModel() {
 
-    private var sharingLiveData = MutableLiveData<SharingData>()
+    private var sharingLiveData = SingleLiveEvent<SharingData>()
     fun observerSharing() = sharingLiveData
 
-    private var supportLiveData = MutableLiveData<SupportData>()
+    private var supportLiveData = SingleLiveEvent<SupportData>()
     fun observerSupport() = supportLiveData
 
-    private var userAgreementLiveData = MutableLiveData<String>()
+    private var userAgreementLiveData = SingleLiveEvent<String>()
     fun observerUserAgreement() = userAgreementLiveData
 
     private var themeLiveData = MutableLiveData<Boolean>(settingsInteractor.getTheme())
-    fun observerSettings() = themeLiveData
+    fun observerThemeLiveData() = themeLiveData
 
 
 
