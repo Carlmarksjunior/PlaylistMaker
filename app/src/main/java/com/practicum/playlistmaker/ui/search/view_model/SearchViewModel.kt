@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.ui.search.view_model
 
-import android.app.Application
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -8,32 +7,18 @@ import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.domain.search.HistoryInteractor
 import com.practicum.playlistmaker.domain.search.TracksInteractor
 import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.ui.search.state.TrackState
 
-class SearchViewModel(private val disconnectMessage: String,
-                      private val emptyResultMessage: String,
+class SearchViewModel(private val context: Context,
                       private val tracksInteractor: TracksInteractor,
                       private val historyInteractor: HistoryInteractor): ViewModel() {
     companion object{
         private  val SEARCH_REQUEST_TOKEN = Any()
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        fun getFactory(context: Context ): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]as Application)
-                SearchViewModel(disconnectMessage = context.getString(R.string.disconnect_message),
-                    emptyResultMessage = context.getString(R.string.result_is_empty),
-                    Creator.provideTracksInteractor(context),
-                    Creator.provideHistoryInteractor(context))
-            }
-        }
     }
 
 
@@ -86,14 +71,14 @@ class SearchViewModel(private val disconnectMessage: String,
                             errorMessage!=null->{
                                 renderState(
                                     TrackState.Error(
-                                        errorMessage =disconnectMessage,
+                                        errorMessage =context.getString(R.string.disconnect_message),
                                     )
                                 )
                             }
                             tracks.isEmpty()->{
                                 renderState(
                                     TrackState.Empty(
-                                        message = emptyResultMessage
+                                        message = context.getString(R.string.result_is_empty)
                                     )
                                 )
                             }

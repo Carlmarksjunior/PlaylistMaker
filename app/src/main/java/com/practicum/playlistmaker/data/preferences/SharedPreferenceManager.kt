@@ -1,24 +1,24 @@
 package com.practicum.playlistmaker.data.preferences
 
-import android.content.Context
+import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.domain.search.model.Track
 
-class SharedPreferenceManager(private val context: Context) {
-    private val gson = Gson()
-    private val sharedPreferences = context.getSharedPreferences(HISTORY_KEY, Context.MODE_PRIVATE)
-    val sharedPreferencesSettings = context.getSharedPreferences(PLAY_LIST_MAKER_PREFERENCES, Context.MODE_PRIVATE)
+class SharedPreferenceManager(private val gson: Gson,
+                              private val sharedPreferencesHistory: SharedPreferences,
+                              private val sharedPreferencesSettings: SharedPreferences ) {
 
 
     companion object {
-        private const val HISTORY_KEY = "search_history"
-        private const val PLAY_LIST_MAKER_PREFERENCES = "Settings"
-        private const val SWITCH_MATERIAL_KEY = "key_for_switch_material"
+
+         const val PLAY_LIST_MAKER_PREFERENCES = "Settings"
+         const val HISTORY_KEY = "search_history"
+         const val SWITCH_MATERIAL_KEY = "key_for_switch_material"
     }
 
     fun getSaveTracks(): List<Track> {
-        val historyJson = sharedPreferences.getString(HISTORY_KEY, null)
+        val historyJson = sharedPreferencesHistory.getString(HISTORY_KEY, null)
         return if (historyJson != null) {
             val type = object : TypeToken<List<Track>>() {}.type
             gson.fromJson(historyJson, type) ?: emptyList()
@@ -38,13 +38,13 @@ class SharedPreferenceManager(private val context: Context) {
             listHistory.removeAt(listHistory.size - 1)
         }
         val historyJson = gson.toJson(listHistory)
-        sharedPreferences.edit()
+        sharedPreferencesHistory.edit()
             .putString(HISTORY_KEY, historyJson)
             .apply()
     }
 
     fun clearHistory() {
-        sharedPreferences.edit()
+        sharedPreferencesHistory.edit()
             .remove(HISTORY_KEY)
             .apply()
 
