@@ -47,4 +47,9 @@
         <item name="android:textColor">@color/placeholderBack</item>
         <item name="android:textSize">@dimen/smallTextSize13</item>
     </style>
+    <style name="textOnTabLayoutMedia">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">@dimen/smallTextSize14</item>
+    </style>
 </resources>
