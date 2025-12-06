@@ -51,7 +51,6 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         adapter = AdapterTracks({ clickedTrack ->
             searchViewModel.saveTrack(clickedTrack)
             val intent = Intent(this, PlayerActivity::class.java).apply {
