@@ -18,5 +18,6 @@
     <color name="placeholderText">#FF1A1B22</color>
     <color name="thumbTint">#FF3772E7</color>
     <color name="trackTint">#FF9FBBF3</color>
+    <color name="viewSeparatorColor">#FFFFFFFF</color>
 
 </resources>

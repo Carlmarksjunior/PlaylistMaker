@@ -27,7 +27,7 @@ class PlayerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentPlayerBinding.inflate(inflater,container,false)
         return binding.root
     }
@@ -125,6 +125,11 @@ class PlayerFragment : Fragment() {
         playerViewModel.observeTimerLiveData().observe(viewLifecycleOwner){
             binding.timeNow.text = it
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
     companion object {
         const val TRACK_KEY = "track"

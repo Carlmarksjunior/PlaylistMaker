@@ -147,6 +147,11 @@ class SearchFragment : Fragment() {
 
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     private fun hideAllView(){
         binding.apply {
             tvSearchHistory.visibility= View.GONE
