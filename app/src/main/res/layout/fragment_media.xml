@@ -5,27 +5,17 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.media.activity.MediaActivity">
-    <Button
-        android:id="@+id/mediaBackButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        app:layout_constraintStart_toStartOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginStart="@dimen/margin4"
-        android:layout_marginTop="@dimen/margin4"
-        android:backgroundTint="?attr/colorSecondary"
-        app:icon="@drawable/ic_back_arrow_24"
-        app:iconTint="?attr/colorOnPrimary"
-        style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+    tools:context=".ui.media.fragments.MediaFragment"
+    android:background="@color/placeholderText">
 
     <TextView
+        android:id="@+id/mediaTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/mediaBackButton"
-        app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="@dimen/smallTextSize14"
-        android:layout_marginStart="@dimen/marginTop12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/marginTop14"
+        android:layout_marginStart="@dimen/marginSettings"
         android:text="@string/media"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="@dimen/well_textSize"
@@ -37,13 +27,14 @@
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/mediaBackButton"
+        app:layout_constraintTop_toBottomOf="@id/mediaTv"
         app:layout_constraintStart_toStartOf="@id/main"
-        android:layout_marginTop="@dimen/margin4"
+        android:layout_marginTop="@dimen/marginSettings"
         app:tabTextColor="@color/placeholderBack"
         app:tabIndicatorColor="@color/placeholderBack"
         app:tabTextAppearance="@style/textOnTabLayoutMedia"
-        app:tabMode="fixed" />
+        app:tabMode="fixed"
+        android:background="@color/placeholderText" />
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"

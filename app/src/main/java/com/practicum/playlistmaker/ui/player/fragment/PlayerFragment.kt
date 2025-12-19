@@ -1,41 +1,44 @@
-package com.practicum.playlistmaker.ui.player.activity
+package com.practicum.playlistmaker.ui.player.fragment
 
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityAudioPlayerBinding
+import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PlayerActivity() : AppCompatActivity() {
+class PlayerFragment : Fragment() {
+
 
     private lateinit var artSong: String
-    private lateinit var binding: ActivityAudioPlayerBinding
-
 
     private val playerViewModel by viewModel<PlayerViewModel>()
+    private var _binding: FragmentPlayerBinding? = null
+    private val binding get() = _binding!!
 
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        val track = intent.getParcelableExtra<Track>(TRACK_KEY)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentPlayerBinding.inflate(inflater,container,false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val track = arguments?.getParcelable<Track>(TRACK_KEY)
         if (!track?.previewUrl.isNullOrEmpty()){
             playerViewModel.preparePlayer(track?.previewUrl?:"")
         }
 
-        binding.menuButtonAudioPlayer.setOnClickListener {
-            finish()
-        }
 
 
 
@@ -98,7 +101,7 @@ class PlayerActivity() : AppCompatActivity() {
         binding.playStop.isEnabled = false
 
 
-        playerViewModel.observePlayerStateLiveData().observe(this) {
+        playerViewModel.observePlayerStateLiveData().observe(viewLifecycleOwner) {
             val state = StatePlayer.stateValue(it)
             when (state) {
                 StatePlayer.STATE_DEFAULT -> binding.playStop.isEnabled = false
@@ -119,18 +122,18 @@ class PlayerActivity() : AppCompatActivity() {
             playerViewModel.onPlayButtonClicked()
         }
 
-        playerViewModel.observeTimerLiveData().observe(this){
+        playerViewModel.observeTimerLiveData().observe(viewLifecycleOwner){
             binding.timeNow.text = it
         }
     }
-
-    override fun onPause() {
-        super.onPause()
-        playerViewModel.pausePlayer()
-    }
-
     companion object {
         const val TRACK_KEY = "track"
+
+        fun createArgs(track: Track): Bundle {
+            return Bundle().apply {
+                putParcelable(TRACK_KEY, track)
+            }
+        }
     }
 }
 enum class StatePlayer(val value: Int){
@@ -140,9 +143,8 @@ enum class StatePlayer(val value: Int){
     STATE_PAUSED(3);
     companion object{
         fun stateValue(value:Int): StatePlayer?{
-            return entries.find { it.value == value }
+            return entries.find { it.value ==value }
         }
     }
-
 
 }

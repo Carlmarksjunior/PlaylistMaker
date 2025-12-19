@@ -13,5 +13,7 @@
         <item name="android:statusBarColor">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
         <item name="colorAccent">@color/blue</item>
+
+        <item name="colorOnSurface">@color/blackYP</item>
     </style>
 </resources>

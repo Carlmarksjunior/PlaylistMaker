@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.ui.search.activity
+package com.practicum.playlistmaker.ui.search.fragment
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
@@ -17,8 +17,8 @@ class AdapterTracks(val clickListener: (Track) -> Unit): RecyclerView.Adapter<Tr
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder=
-        TrackViewHolder.from(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder =
+        TrackViewHolder.Companion.from(parent)
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(trackList[position], clickListener)
