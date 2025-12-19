@@ -1,30 +1,45 @@
-package com.practicum.playlistmaker.ui.settings.activity
+package com.practicum.playlistmaker.ui.settings.fragments
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
+import com.practicum.playlistmaker.databinding.FragmentSettingBinding
 import com.practicum.playlistmaker.ui.settings.application.App
 import com.practicum.playlistmaker.ui.settings.view_model.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SettingsActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySettingsBinding
+class SettingFragment : Fragment() {
+
+    private var _binding: FragmentSettingBinding? = null
+    private val binding get() = _binding!!
+
     private val settingsViewModel by viewModel<SettingsViewModel>()
+
+    private lateinit var app: App
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.backButton.setOnClickListener {
-            finish()
-        }
+        app = requireContext().applicationContext as App
+    }
 
-        val app = applicationContext as App
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentSettingBinding.inflate(inflater,container,false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.themeSwitcher.isChecked = app.darkTheme
-        settingsViewModel.observerThemeLiveData().observe(this){
+        settingsViewModel.observerThemeLiveData().observe(viewLifecycleOwner){
             app.darkTheme = it
             binding.themeSwitcher.isChecked = it
 
@@ -37,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
 
-        settingsViewModel.observerSharing().observe(this){
+        settingsViewModel.observerSharing().observe(viewLifecycleOwner){
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
                 putExtra(Intent.EXTRA_TEXT, it.text)
@@ -53,7 +68,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
 
-        settingsViewModel.observerSupport().observe(this){
+        settingsViewModel.observerSupport().observe(viewLifecycleOwner){
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(it.email))
@@ -69,7 +84,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
 
-        settingsViewModel.observerUserAgreement().observe(this){
+        settingsViewModel.observerUserAgreement().observe(viewLifecycleOwner){
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
             startActivity(intent)
         }
@@ -78,5 +93,11 @@ class SettingsActivity : AppCompatActivity() {
             settingsViewModel.userAgreement()
         }
 
-        }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding=null
+    }
+    }
+
