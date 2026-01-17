@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.ui.player.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.domain.search.model.Track
+import com.practicum.playlistmaker.ui.player.state.PlayerState
 import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -100,30 +100,28 @@ class PlayerFragment : Fragment() {
 
 
         playerViewModel.observePlayerStateLiveData().observe(viewLifecycleOwner) {
-            val state = StatePlayer.stateValue(it)
-            when (state) {
-                StatePlayer.STATE_DEFAULT -> binding.playStop.isEnabled = false
-                StatePlayer.STATE_PREPARED -> {binding.playStop.isEnabled = true
-                    binding.playStop.setImageResource(R.drawable.ic_playstop_84)}
-                StatePlayer.STATE_PLAYING -> {
-                    binding.playStop.setImageResource(R.drawable.ic_stopplay_84)
-
-                }
-
-                StatePlayer.STATE_PAUSED -> {
+            when (it) {
+                is PlayerState.Default -> binding.playStop.isEnabled = false
+                is PlayerState.Prepared -> {binding.playStop.isEnabled = true
                     binding.playStop.setImageResource(R.drawable.ic_playstop_84)
+                    binding.timeNow.text = it.progress}
+                is PlayerState.Playing -> {
+                    binding.playStop.setImageResource(R.drawable.ic_stopplay_84)
+                    binding.timeNow.text = it.progress
+
                 }
 
-                null -> Log.e("Player", "Неизвестное состояние: $it")
+                is PlayerState.Paused -> {
+                    binding.playStop.setImageResource(R.drawable.ic_playstop_84)
+                    binding.timeNow.text = it.progress
+                }
+
             }
         }
         binding.playStop.setOnClickListener {
             playerViewModel.onPlayButtonClicked()
         }
 
-        playerViewModel.observeTimerLiveData().observe(viewLifecycleOwner){
-            binding.timeNow.text = it
-        }
     }
 
     override fun onDestroyView() {
@@ -139,16 +137,4 @@ class PlayerFragment : Fragment() {
             }
         }
     }
-}
-enum class StatePlayer(val value: Int){
-    STATE_DEFAULT(0),
-    STATE_PREPARED(1),
-    STATE_PLAYING(2),
-    STATE_PAUSED(3);
-    companion object{
-        fun stateValue(value:Int): StatePlayer?{
-            return entries.find { it.value ==value }
-        }
-    }
-
 }

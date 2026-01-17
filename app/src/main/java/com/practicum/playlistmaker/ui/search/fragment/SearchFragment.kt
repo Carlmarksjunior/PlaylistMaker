@@ -5,6 +5,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +28,7 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    var editText: String? = SearchFragment.Companion.EDIT_INPUT
+    var editText: String? = EDIT_INPUT
 
     lateinit var adapter: AdapterTracks
 
@@ -38,7 +39,7 @@ class SearchFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSearchBinding.inflate(inflater,container,false)
         return binding.root
     }
@@ -62,10 +63,6 @@ class SearchFragment : Fragment() {
         searchViewModel.observeStateLiveData().observe(viewLifecycleOwner) {
             render(it)
         }
-        searchViewModel.observeHistoryLiveData().observe(viewLifecycleOwner){
-            adapter.searchHistory.clear()
-            adapter.searchHistory.addAll(it)
-        }
 
 
 
@@ -86,11 +83,12 @@ class SearchFragment : Fragment() {
                         binding.tvSearchHistory.visibility = View.GONE
                         binding.recyclerViewTracks.visibility = View.GONE
                         binding.buttonPlaceHolder.visibility = View.GONE
+                        adapter.notifyDataSetChanged()
 
                     } else {
                         binding.tvSearchHistory.visibility = View.VISIBLE
                         binding.recyclerViewTracks.visibility = View.VISIBLE
-                        adapter.updateData(adapter.searchHistory!!)
+                        adapter.updateData(adapter.searchHistory)
                         binding.buttonPlaceHolder.text = getString(R.string.clear_history)
                         binding.buttonPlaceHolder.visibility = View.VISIBLE
                         binding.tvPlaceHolder.visibility=View.GONE
@@ -103,6 +101,7 @@ class SearchFragment : Fragment() {
                 searchViewModel.searchDebounce(
                     changedText = s?.toString() ?: ""
                 )
+                Log.d("Test", "првоерка $s")
             }
         }
         textWatcher.let { binding.editTextSearch.addTextChangedListener(it) }
@@ -195,6 +194,8 @@ class SearchFragment : Fragment() {
         when (state) {
             is TrackState.Loading -> showLoading()
             is TrackState.Content -> showContent(state.tracks)
+            is TrackState.History -> {adapter.searchHistory.clear()
+                adapter.searchHistory.addAll(state.tracks)}
             is TrackState.Error -> showError(state.errorMessage)
             is TrackState.Empty -> showEmpty(state.message)
         }

@@ -1,8 +1,6 @@
 package com.practicum.playlistmaker.ui.search.view_model
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,29 +27,25 @@ class SearchViewModel(private val context: Context,
     private val stateLiveData  = MutableLiveData<TrackState>()
     fun observeStateLiveData(): LiveData<TrackState> = stateLiveData
 
-    private val historyLiveData = MutableLiveData<List<Track>>()
-    fun observeHistoryLiveData() = historyLiveData
+
 
     private val historySearch = mutableListOf<Track>()
 
     init {
-        historyLiveData.postValue(historyInteractor.getSaveTracks().toMutableList())
+        stateLiveData.postValue(TrackState.History(historyInteractor.getSaveTracks().toMutableList()))
         historySearch.addAll(historyInteractor.getSaveTracks().toMutableList())
     }
 
     private var latestSearchText: String? = null
-
-    private val handler = Handler(Looper.getMainLooper())
-
+    
     private val clickDebounce:(String)-> Unit = debounce<String>(SEARCH_DEBOUNCE_DELAY,
         viewModelScope,
         false,
         {searchRequest(it)})
 
     fun searchDebounce(changedText: String) {
-
-        this.latestSearchText = changedText
-        clickDebounce(changedText)
+            this.latestSearchText = changedText
+            clickDebounce(changedText)
 
     }
 
@@ -110,14 +104,14 @@ class SearchViewModel(private val context: Context,
         }
         historyInteractor.saveTrack(track)
         historySearch.add(track)
-        historyLiveData.postValue(historySearch)
+        stateLiveData.postValue(TrackState.History(historySearch))
 
     }
 
     fun clearHistoryTracks(){
         historyInteractor.clearHistory()
         historySearch.clear()
-        historyLiveData.postValue(emptyList())
+        stateLiveData.postValue(TrackState.History(emptyList()))
     }
 
 
