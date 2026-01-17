@@ -1,11 +1,13 @@
 package com.practicum.playlistmaker.ui.player.view_model
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.domain.player.AudioPlayerInteractor
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -15,27 +17,29 @@ class PlayerViewModel(private val mediaPlayer: AudioPlayerInteractor) : ViewMode
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
-        private const val MUSIC_TIMER_DELAY = 200L
+        private const val MUSIC_TIMER_DELAY = 300L
 
     }
 
-    private val handler = Handler(Looper.getMainLooper())
     private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
     fun observePlayerStateLiveData(): LiveData<Int> = playerStateLiveData
 
     private val timerLiveData = MutableLiveData("00:00")
     fun observeTimerLiveData(): LiveData<String> = timerLiveData
+
+    private var timerJob: Job? = null
     private var isPlayerState = true
 
-    private val timerRunnable = Runnable {
-        if (playerStateLiveData.value == STATE_PLAYING) {
-            startTimerUpdate()
-        }
-    }
+
 
     private fun startTimerUpdate() {
-        timerLiveData.postValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition()))
-        handler.postDelayed(timerRunnable, MUSIC_TIMER_DELAY)
+        timerJob = viewModelScope.launch {
+            timerLiveData.postValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition()))
+            delay(MUSIC_TIMER_DELAY)
+            if (playerStateLiveData.value == STATE_PLAYING) {
+                startTimerUpdate()
+            }
+        }
     }
 
 
@@ -48,6 +52,7 @@ class PlayerViewModel(private val mediaPlayer: AudioPlayerInteractor) : ViewMode
         }
         mediaPlayer.setOnCompletionListener {
             isPlayerState = true
+            resetTimer()
             playerStateLiveData.postValue(STATE_PREPARED)
         }
     }
@@ -65,7 +70,6 @@ class PlayerViewModel(private val mediaPlayer: AudioPlayerInteractor) : ViewMode
     }
 
     fun pausePlayer() {
-        pauseTimer()
         mediaPlayer.pause()
         playerStateLiveData.postValue(STATE_PAUSED)
     }
@@ -74,16 +78,11 @@ class PlayerViewModel(private val mediaPlayer: AudioPlayerInteractor) : ViewMode
     override fun onCleared() {
         super.onCleared()
         mediaPlayer.release()
-        resetTimer()
+
     }
 
     private fun resetTimer() {
-        handler.removeCallbacks(timerRunnable)
         timerLiveData.postValue("00:00")
-    }
-
-    private fun pauseTimer() {
-        handler.removeCallbacks(timerRunnable)
     }
 }
 

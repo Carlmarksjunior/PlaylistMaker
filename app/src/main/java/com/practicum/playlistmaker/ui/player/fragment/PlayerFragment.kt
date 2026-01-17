@@ -40,8 +40,6 @@ class PlayerFragment : Fragment() {
         }
 
 
-
-
         if (!track?.trackName.isNullOrEmpty()) {
             binding.trackName.text = track.trackName
         } else {
@@ -105,7 +103,8 @@ class PlayerFragment : Fragment() {
             val state = StatePlayer.stateValue(it)
             when (state) {
                 StatePlayer.STATE_DEFAULT -> binding.playStop.isEnabled = false
-                StatePlayer.STATE_PREPARED -> binding.playStop.isEnabled = true
+                StatePlayer.STATE_PREPARED -> {binding.playStop.isEnabled = true
+                    binding.playStop.setImageResource(R.drawable.ic_playstop_84)}
                 StatePlayer.STATE_PLAYING -> {
                     binding.playStop.setImageResource(R.drawable.ic_stopplay_84)
 

@@ -3,8 +3,6 @@ package com.practicum.playlistmaker.ui.search.fragment
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -12,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
@@ -20,6 +19,7 @@ import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.ui.player.fragment.PlayerFragment
 import com.practicum.playlistmaker.ui.search.state.TrackState
 import com.practicum.playlistmaker.ui.search.view_model.SearchViewModel
+import com.practicum.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -175,15 +175,19 @@ class SearchFragment : Fragment() {
     }
 
     private var isClickedAllowed = true
-    private val handler: Handler = Handler(Looper.getMainLooper())
+
+    private val clickDebounce:(Boolean)-> Unit = debounce<Boolean>(CLICK_DEBOUNCE_DELAY,
+        lifecycleScope,
+        false,
+        {param->isClickedAllowed = param})
+
     private fun clickDebounce(): Boolean {
         val current = isClickedAllowed
         if (isClickedAllowed) {
             isClickedAllowed = false
-            handler.postDelayed({ isClickedAllowed = true },
-                SearchFragment.Companion.CLICK_DEBOUNCE_DELAY
-            )
+            clickDebounce(true)
         }
+
         return current
     }
 

@@ -3,21 +3,23 @@ package com.practicum.playlistmaker.ui.search.view_model
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.search.HistoryInteractor
 import com.practicum.playlistmaker.domain.search.TracksInteractor
 import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.ui.search.state.TrackState
+import com.practicum.playlistmaker.utils.debounce
+import kotlinx.coroutines.launch
 
 class SearchViewModel(private val context: Context,
                       private val tracksInteractor: TracksInteractor,
                       private val historyInteractor: HistoryInteractor): ViewModel() {
     companion object{
-        private  val SEARCH_REQUEST_TOKEN = Any()
+
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 
@@ -41,59 +43,58 @@ class SearchViewModel(private val context: Context,
 
     private val handler = Handler(Looper.getMainLooper())
 
+    private val clickDebounce:(String)-> Unit = debounce<String>(SEARCH_DEBOUNCE_DELAY,
+        viewModelScope,
+        false,
+        {searchRequest(it)})
+
     fun searchDebounce(changedText: String) {
 
         this.latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+        clickDebounce(changedText)
 
-        val searchRunnable = Runnable { searchRequest(changedText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
     }
+
 
     private fun searchRequest(trackName: String) {
         if (trackName.isNotEmpty()) {
             renderState(TrackState.Loading)
-            tracksInteractor.searchTracks(trackName, object : TracksInteractor.TracksConsumer {
-                override fun consume(foundTracks: List<Track>?, errorMessage: String?) {
-                    handler.post {
-                        val tracks = mutableListOf<Track>()
 
-                        if (foundTracks!=null){
-                            tracks.addAll(foundTracks)
-                        }
-                        when{
-                            errorMessage!=null->{
-                                renderState(
-                                    TrackState.Error(
-                                        errorMessage =context.getString(R.string.disconnect_message),
-                                    )
-                                )
-                            }
-                            tracks.isEmpty()->{
-                                renderState(
-                                    TrackState.Empty(
-                                        message = context.getString(R.string.result_is_empty)
-                                    )
-                                )
-                            }
-                            else->{
-                                renderState(
-                                    TrackState.Content(
-                                        tracks=tracks
-                                    )
-                                )
-                            }
-                        }
+            viewModelScope.launch {
+                tracksInteractor.searchTracks(trackName)
+                    .collect {processResult(it.first,it.second)}
+            }
+        }
+    }
 
-                    }
-                }
-            })
+    private fun processResult(foundTracks: List<Track>?,errorMessage: String?){
+        val tracks = mutableListOf<Track>()
+
+        if (foundTracks!=null){
+            tracks.addAll(foundTracks)
+        }
+        when{
+            errorMessage!=null->{
+                renderState(
+                    TrackState.Error(
+                        errorMessage =context.getString(R.string.disconnect_message),
+                    )
+                )
+            }
+            tracks.isEmpty()->{
+                renderState(
+                    TrackState.Empty(
+                        message = context.getString(R.string.result_is_empty)
+                    )
+                )
+            }
+            else->{
+                renderState(
+                    TrackState.Content(
+                        tracks=tracks
+                    )
+                )
+            }
         }
     }
 
@@ -119,9 +120,6 @@ class SearchViewModel(private val context: Context,
         historyLiveData.postValue(emptyList())
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        handler.removeCallbacksAndMessages ( SEARCH_REQUEST_TOKEN )
-    }
+
 
 }
