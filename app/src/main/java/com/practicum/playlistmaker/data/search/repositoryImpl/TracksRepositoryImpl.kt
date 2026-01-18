@@ -2,26 +2,28 @@ package com.practicum.playlistmaker.data.search.repositoryImpl
 
 import android.content.Context
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Resource
 import com.practicum.playlistmaker.data.search.NetworkClient
 import com.practicum.playlistmaker.data.search.dto.TrackSearchRequest
 import com.practicum.playlistmaker.data.search.dto.TracksSearchResponse
 import com.practicum.playlistmaker.domain.search.TracksRepository
 import com.practicum.playlistmaker.domain.search.model.Track
+import com.practicum.playlistmaker.utils.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class TracksRepositoryImpl(private val networkClient: NetworkClient,private val context: Context) : TracksRepository {
-    override fun searchTracks(expression: String): Resource<List<Track>> {
+    override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(TrackSearchRequest(expression))
 
-        return when (response.resultCode) {
+        when (response.resultCode) {
             -1 -> {
-                Resource.Error(context.getString(R.string.disconnect_message))
+                emit(Resource.Error(context.getString(R.string.disconnect_message)))
             }
             200 -> {
-                Resource.Success((response as TracksSearchResponse).results.map {
+                emit(Resource.Success((response as TracksSearchResponse).results.map {
                     Track(
                         it.trackName,
                         it.artistName,
@@ -35,10 +37,10 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient,private val 
                         it.collectionName,
                         it.releaseDate?.substring(0, 4)?: ""
                     )
-                })
+                }))
             }
             else -> {
-                Resource.Error(context.getString(R.string.server_error))
+                emit(Resource.Error(context.getString(R.string.server_error)))
             }
         }
     }

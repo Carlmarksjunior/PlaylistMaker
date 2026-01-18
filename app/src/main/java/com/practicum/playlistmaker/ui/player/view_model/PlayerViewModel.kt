@@ -1,41 +1,44 @@
 package com.practicum.playlistmaker.ui.player.view_model
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.domain.player.AudioPlayerInteractor
+import com.practicum.playlistmaker.ui.player.state.PlayerState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerViewModel(private val mediaPlayer: AudioPlayerInteractor) : ViewModel() {
     companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-        private const val MUSIC_TIMER_DELAY = 200L
 
+        private const val MUSIC_TIMER_DELAY = 300L
     }
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
-    fun observePlayerStateLiveData(): LiveData<Int> = playerStateLiveData
+    private val playerStateLiveData = MutableLiveData<PlayerState>(PlayerState.Default())
+    fun observePlayerStateLiveData(): LiveData<PlayerState> = playerStateLiveData
 
-    private val timerLiveData = MutableLiveData("00:00")
-    fun observeTimerLiveData(): LiveData<String> = timerLiveData
+
+    private var timerJob: Job? = null
     private var isPlayerState = true
 
-    private val timerRunnable = Runnable {
-        if (playerStateLiveData.value == STATE_PLAYING) {
-            startTimerUpdate()
+
+
+    private fun startTimerUpdate() {
+        timerJob = viewModelScope.launch {
+            playerStateLiveData.postValue(PlayerState.Playing(getCurrentProgress()))
+            delay(MUSIC_TIMER_DELAY)
+            if (playerStateLiveData.value is PlayerState.Playing) {
+                startTimerUpdate()
+            }
         }
     }
 
-    private fun startTimerUpdate() {
-        timerLiveData.postValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition()))
-        handler.postDelayed(timerRunnable, MUSIC_TIMER_DELAY)
+    private fun getCurrentProgress(): String{
+        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition())
     }
 
 
@@ -44,47 +47,40 @@ class PlayerViewModel(private val mediaPlayer: AudioPlayerInteractor) : ViewMode
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            playerStateLiveData.postValue(STATE_PREPARED)
+            playerStateLiveData.postValue(PlayerState.Prepared())
         }
         mediaPlayer.setOnCompletionListener {
             isPlayerState = true
-            playerStateLiveData.postValue(STATE_PREPARED)
+            playerStateLiveData.postValue(PlayerState.Prepared())
         }
     }
     fun onPlayButtonClicked() {
         when(playerStateLiveData.value) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PREPARED, STATE_PAUSED -> startPlayer()
+            is PlayerState.Playing -> pausePlayer()
+            is PlayerState.Prepared, is PlayerState.Paused ->startPlayer()
+            else -> {}
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.play()
-        playerStateLiveData.postValue(STATE_PLAYING)
+        playerStateLiveData.postValue(PlayerState.Playing(getCurrentProgress()))
         startTimerUpdate()
     }
 
     fun pausePlayer() {
-        pauseTimer()
         mediaPlayer.pause()
-        playerStateLiveData.postValue(STATE_PAUSED)
+        timerJob?.cancel()
+        playerStateLiveData.postValue(PlayerState.Paused(getCurrentProgress()))
     }
 
 
     override fun onCleared() {
         super.onCleared()
         mediaPlayer.release()
-        resetTimer()
+
     }
 
-    private fun resetTimer() {
-        handler.removeCallbacks(timerRunnable)
-        timerLiveData.postValue("00:00")
-    }
-
-    private fun pauseTimer() {
-        handler.removeCallbacks(timerRunnable)
-    }
 }
 
 
