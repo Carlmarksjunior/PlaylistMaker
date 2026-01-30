@@ -7,7 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".ui.media.fragments.PlayListFragment"
     android:backgroundTint="?attr/colorOnSecondary">
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewTracks"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main"
+        android:layout_marginTop="@dimen/marginSettings"
+        android:visibility="gone"/>
     <ImageView
         android:id="@+id/media_image_place_holder"
         android:layout_width="wrap_content"
@@ -19,6 +26,7 @@
         android:src="@drawable/ic_not_search_result_120"
         android:visibility="visible" />
     <TextView
+        android:id="@+id/text_placeholder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@id/main"

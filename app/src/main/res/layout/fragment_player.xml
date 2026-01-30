@@ -137,8 +137,7 @@
         app:layout_constraintEnd_toEndOf="@id/rightGuideLine"
         app:layout_constraintStart_toEndOf="@id/playStop"
         app:layout_constraintTop_toTopOf="@id/playStop"
-        app:layout_constraintBottom_toBottomOf="@id/playStop"
-        app:srcCompat="@drawable/ic_favourite_25_23" />
+        app:layout_constraintBottom_toBottomOf="@id/playStop" />
 
     <TextView
         android:id="@+id/timeNow"

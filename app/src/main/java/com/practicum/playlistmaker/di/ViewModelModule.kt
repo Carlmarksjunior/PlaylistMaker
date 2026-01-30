@@ -1,10 +1,10 @@
 package com.practicum.playlistmaker.di
 
-import com.practicum.playlistmaker.ui.media.view_model.FavoriteTracksViewModel
-import com.practicum.playlistmaker.ui.media.view_model.PlayListViewModel
-import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
-import com.practicum.playlistmaker.ui.search.view_model.SearchViewModel
-import com.practicum.playlistmaker.ui.settings.view_model.SettingsViewModel
+import com.practicum.playlistmaker.presentation.media.view_model.FavoriteTracksViewModel
+import com.practicum.playlistmaker.presentation.media.view_model.PlayListViewModel
+import com.practicum.playlistmaker.presentation.player.view_model.PlayerViewModel
+import com.practicum.playlistmaker.presentation.search.view_model.SearchViewModel
+import com.practicum.playlistmaker.presentation.settings.view_model.SettingsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -12,7 +12,7 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
     viewModel{
-        PlayerViewModel(get())
+        PlayerViewModel(get(),get())
     }
 
     viewModel{
@@ -24,7 +24,7 @@ val viewModelModule = module {
     }
 
     viewModel {
-        FavoriteTracksViewModel()
+        FavoriteTracksViewModel(androidContext(),get())
     }
 
     viewModel {

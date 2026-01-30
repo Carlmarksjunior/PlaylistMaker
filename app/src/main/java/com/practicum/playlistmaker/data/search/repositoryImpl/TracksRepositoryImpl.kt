@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.data.search.repositoryImpl
 
 import android.content.Context
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.db.database.AppDataBase
 import com.practicum.playlistmaker.data.search.NetworkClient
 import com.practicum.playlistmaker.data.search.dto.TrackSearchRequest
 import com.practicum.playlistmaker.data.search.dto.TracksSearchResponse
@@ -14,7 +15,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class TracksRepositoryImpl(private val networkClient: NetworkClient,private val context: Context) : TracksRepository {
+class TracksRepositoryImpl(private val networkClient: NetworkClient,
+                           private val context: Context,
+                           private val appDataBase: AppDataBase) : TracksRepository {
     override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(TrackSearchRequest(expression))
 
@@ -23,6 +26,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient,private val 
                 emit(Resource.Error(context.getString(R.string.disconnect_message)))
             }
             200 -> {
+                val tracksId = appDataBase.trackDao().getAllIdTracks()
                 emit(Resource.Success((response as TracksSearchResponse).results.map {
                     Track(
                         it.trackName,
@@ -35,7 +39,9 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient,private val 
                         it.country,
                         it.primaryGenreName,
                         it.collectionName,
-                        it.releaseDate?.substring(0, 4)?: ""
+                        it.releaseDate?.substring(0, 4)?: "",
+                        isFavorite = tracksId.contains(it.trackId.toString())
+
                     )
                 }))
             }

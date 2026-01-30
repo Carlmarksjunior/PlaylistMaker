@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.ui.search.view_model
+package com.practicum.playlistmaker.presentation.search.view_model
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -9,7 +9,7 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.search.HistoryInteractor
 import com.practicum.playlistmaker.domain.search.TracksInteractor
 import com.practicum.playlistmaker.domain.search.model.Track
-import com.practicum.playlistmaker.ui.search.state.TrackState
+import com.practicum.playlistmaker.presentation.search.view_model.state.TrackState
 import com.practicum.playlistmaker.utils.debounce
 import kotlinx.coroutines.launch
 
@@ -31,12 +31,6 @@ class SearchViewModel(private val context: Context,
 
     private val historySearch = mutableListOf<Track>()
 
-    init {
-        viewModelScope.launch {
-            stateLiveData.postValue(TrackState.History(historyInteractor.getSaveTracks().toMutableList()))
-            historySearch.addAll(historyInteractor.getSaveTracks().toMutableList())
-        }
-    }
 
     private var latestSearchText: String? = null
     
@@ -44,6 +38,14 @@ class SearchViewModel(private val context: Context,
         viewModelScope,
         false,
         {searchRequest(it)})
+
+
+    fun startHistory(){
+        viewModelScope.launch {
+            stateLiveData.postValue(TrackState.History(historyInteractor.getSaveTracks().toMutableList()))
+            historySearch.addAll(historyInteractor.getSaveTracks().toMutableList())
+        }
+    }
 
     fun searchDebounce(changedText: String) {
             this.latestSearchText = changedText
