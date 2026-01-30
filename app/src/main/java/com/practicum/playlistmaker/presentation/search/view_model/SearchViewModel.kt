@@ -32,8 +32,10 @@ class SearchViewModel(private val context: Context,
     private val historySearch = mutableListOf<Track>()
 
     init {
-        stateLiveData.postValue(TrackState.History(historyInteractor.getSaveTracks().toMutableList()))
-        historySearch.addAll(historyInteractor.getSaveTracks().toMutableList())
+        viewModelScope.launch {
+            stateLiveData.postValue(TrackState.History(historyInteractor.getSaveTracks().toMutableList()))
+            historySearch.addAll(historyInteractor.getSaveTracks().toMutableList())
+        }
     }
 
     private var latestSearchText: String? = null
