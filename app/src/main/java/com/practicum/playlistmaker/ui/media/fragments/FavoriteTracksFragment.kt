@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.ui.media.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,7 +48,6 @@ class FavoritesTracksFragment : Fragment() {
         binding.recyclerViewTracks.layoutManager = LinearLayoutManager(requireContext())
         favoriteTracksViewModel.observeStateLiveData().observe(viewLifecycleOwner){
             render(it)
-            Log.d("meeeee", "{$it.context}")
         }
     }
 

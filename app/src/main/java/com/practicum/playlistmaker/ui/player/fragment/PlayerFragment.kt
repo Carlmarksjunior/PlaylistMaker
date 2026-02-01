@@ -37,7 +37,7 @@ class PlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val track = arguments?.getParcelable<Track>(TRACK_KEY)
         if (!track?.previewUrl.isNullOrEmpty()) {
-            playerViewModel.preparePlayer(track?.previewUrl ?: "")
+            playerViewModel.preparePlayer(track.previewUrl ?: "")
         }
 
 
@@ -63,7 +63,7 @@ class PlayerFragment : Fragment() {
         } else {
             binding.durationGroup.visibility = View.GONE
         }
-        if (track?.isFavorite!!){
+        if (track?.isFavorite == true){
             binding.favourite.setImageResource(R.drawable.ic_favourite_is_active_25_23)
         }else{
             binding.favourite.setImageResource(R.drawable.ic_favourite_25_23)
