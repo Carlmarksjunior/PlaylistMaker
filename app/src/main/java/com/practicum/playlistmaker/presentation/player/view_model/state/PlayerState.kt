@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.ui.player.state
+package com.practicum.playlistmaker.presentation.player.view_model.state
 
 sealed class PlayerState( val progress: String) {
 

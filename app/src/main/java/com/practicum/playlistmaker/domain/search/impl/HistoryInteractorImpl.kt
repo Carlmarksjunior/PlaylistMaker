@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.domain.search.HistoryRepository
 import com.practicum.playlistmaker.domain.search.model.Track
 
 class HistoryInteractorImpl(private val historyRepository: HistoryRepository): HistoryInteractor {
-    override fun getSaveTracks(): List<Track> {
+    override suspend fun getSaveTracks(): List<Track> {
         return historyRepository.getSaveTracks()
     }
 

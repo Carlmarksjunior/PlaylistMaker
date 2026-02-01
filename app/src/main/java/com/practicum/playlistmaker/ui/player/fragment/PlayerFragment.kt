@@ -10,8 +10,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.domain.search.model.Track
-import com.practicum.playlistmaker.ui.player.state.PlayerState
-import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
+import com.practicum.playlistmaker.presentation.player.view_model.PlayerViewModel
+import com.practicum.playlistmaker.presentation.player.view_model.state.PlayerState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerFragment : Fragment() {
@@ -24,19 +24,20 @@ class PlayerFragment : Fragment() {
     private val binding get() = _binding!!
 
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPlayerBinding.inflate(inflater,container,false)
+        _binding = FragmentPlayerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val track = arguments?.getParcelable<Track>(TRACK_KEY)
-        if (!track?.previewUrl.isNullOrEmpty()){
-            playerViewModel.preparePlayer(track?.previewUrl?:"")
+        if (!track?.previewUrl.isNullOrEmpty()) {
+            playerViewModel.preparePlayer(track.previewUrl ?: "")
         }
 
 
@@ -62,7 +63,11 @@ class PlayerFragment : Fragment() {
         } else {
             binding.durationGroup.visibility = View.GONE
         }
-
+        if (track?.isFavorite == true){
+            binding.favourite.setImageResource(R.drawable.ic_favourite_is_active_25_23)
+        }else{
+            binding.favourite.setImageResource(R.drawable.ic_favourite_25_23)
+        }
         artSong = track?.artworkUrl100.toString().replaceAfterLast('/', "512x512bb.jpg")
         val radiusPx = resources.getDimensionPixelSize(R.dimen.cornerRadius10)
         Glide.with(this)
@@ -102,9 +107,12 @@ class PlayerFragment : Fragment() {
         playerViewModel.observePlayerStateLiveData().observe(viewLifecycleOwner) {
             when (it) {
                 is PlayerState.Default -> binding.playStop.isEnabled = false
-                is PlayerState.Prepared -> {binding.playStop.isEnabled = true
+                is PlayerState.Prepared -> {
+                    binding.playStop.isEnabled = true
                     binding.playStop.setImageResource(R.drawable.ic_playstop_84)
-                    binding.timeNow.text = it.progress}
+                    binding.timeNow.text = it.progress
+                }
+
                 is PlayerState.Playing -> {
                     binding.playStop.setImageResource(R.drawable.ic_stopplay_84)
                     binding.timeNow.text = it.progress
@@ -118,6 +126,18 @@ class PlayerFragment : Fragment() {
 
             }
         }
+        playerViewModel.observeIsFavoriteLiveData().observe(viewLifecycleOwner) {
+            if (it){
+                binding.favourite.setImageResource(R.drawable.ic_favourite_is_active_25_23)
+                track?.isFavorite=it
+            }  else{
+                binding.favourite.setImageResource(R.drawable.ic_favourite_25_23)
+                track?.isFavorite=it}
+        }
+        binding.favourite.setOnClickListener {
+            playerViewModel.onFavoriteClicked(track!!)
+        }
+
         binding.playStop.setOnClickListener {
             playerViewModel.onPlayButtonClicked()
         }
@@ -128,6 +148,7 @@ class PlayerFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
     companion object {
         const val TRACK_KEY = "track"
 

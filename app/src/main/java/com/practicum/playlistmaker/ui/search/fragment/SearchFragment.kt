@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.domain.search.model.Track
+import com.practicum.playlistmaker.presentation.search.view_model.SearchViewModel
+import com.practicum.playlistmaker.presentation.search.view_model.state.TrackState
 import com.practicum.playlistmaker.ui.player.fragment.PlayerFragment
-import com.practicum.playlistmaker.ui.search.state.TrackState
-import com.practicum.playlistmaker.ui.search.view_model.SearchViewModel
 import com.practicum.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -46,6 +46,7 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        searchViewModel.startHistory()
         adapter = AdapterTracks({ clickedTrack ->
             searchViewModel.saveTrack(clickedTrack)
 
@@ -111,6 +112,7 @@ class SearchFragment : Fragment() {
                 if (adapter.searchHistory.isNotEmpty()) {
                     binding.tvSearchHistory.visibility = View.VISIBLE
                     binding.recyclerViewTracks.visibility = View.VISIBLE
+                    searchViewModel.startHistory()
                     adapter.updateData(adapter.searchHistory)
                     binding.buttonPlaceHolder.text = getString(R.string.clear_history)
                     binding.buttonPlaceHolder.visibility = View.VISIBLE

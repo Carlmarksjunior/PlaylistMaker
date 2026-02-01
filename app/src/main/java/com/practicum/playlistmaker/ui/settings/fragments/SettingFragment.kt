@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSettingBinding
 import com.practicum.playlistmaker.ui.settings.application.App
-import com.practicum.playlistmaker.ui.settings.view_model.SettingsViewModel
+import com.practicum.playlistmaker.presentation.settings.view_model.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingFragment : Fragment() {
