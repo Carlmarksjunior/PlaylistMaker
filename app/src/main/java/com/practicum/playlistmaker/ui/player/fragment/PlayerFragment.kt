@@ -4,14 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
+import com.practicum.playlistmaker.domain.db.playLists.model.Album
 import com.practicum.playlistmaker.domain.search.model.Track
+import com.practicum.playlistmaker.presentation.media.view_model.state.PlayListState
 import com.practicum.playlistmaker.presentation.player.view_model.PlayerViewModel
 import com.practicum.playlistmaker.presentation.player.view_model.state.PlayerState
+import com.practicum.playlistmaker.presentation.player.view_model.state.TrackInAlbumState
+import com.practicum.playlistmaker.ui.player.fragment.adapter.AlbumsBottomSheetAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerFragment : Fragment() {
@@ -23,6 +31,7 @@ class PlayerFragment : Fragment() {
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var adapter: AlbumsBottomSheetAdapter
 
 
     override fun onCreateView(
@@ -35,9 +44,72 @@ class PlayerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.standardBottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        playerViewModel.getAllAlbums()
+        playerViewModel.observeAlbumsLiveData().observe(viewLifecycleOwner) {
+            render(it)
+        }
+
+        playerViewModel.observeTrackInAlbumLiveData().observe(viewLifecycleOwner) {
+            when (it) {
+                is TrackInAlbumState.isSucces -> {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                    Toast.makeText(
+                        requireActivity(),
+                        "Добавлено в плейлист [{${it.name}}]",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                is TrackInAlbumState.isFail -> {
+                    Toast.makeText(
+                        requireActivity(),
+                        "Трек уже добавлен в плейлист [${it.name}]",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+
+        binding.addAlbum.setOnClickListener {
+            playerViewModel.getAllAlbums()
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.visibility = View.GONE
+                    }
+
+                    else -> {
+                        binding.overlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onSlide(p0: View, p1: Float) {
+            }
+        })
+
+        binding.bottomSheetButton.setOnClickListener {
+            findNavController().navigate(R.id.action_playerFragment_to_playListCreateFragment)
+        }
+
+
+        binding.menuButtonAudioPlayer.setOnClickListener {
+            findNavController().popBackStack()
+        }
         val track = arguments?.getParcelable<Track>(TRACK_KEY)
-        if (!track?.previewUrl.isNullOrEmpty()) {
-            playerViewModel.preparePlayer(track.previewUrl ?: "")
+
+        if (track != null && !track.previewUrl.isNullOrBlank()) {
+            playerViewModel.preparePlayer(track.previewUrl)
         }
 
 
@@ -63,9 +135,9 @@ class PlayerFragment : Fragment() {
         } else {
             binding.durationGroup.visibility = View.GONE
         }
-        if (track?.isFavorite == true){
+        if (track?.isFavorite == true) {
             binding.favourite.setImageResource(R.drawable.ic_favourite_is_active_25_23)
-        }else{
+        } else {
             binding.favourite.setImageResource(R.drawable.ic_favourite_25_23)
         }
         artSong = track?.artworkUrl100.toString().replaceAfterLast('/', "512x512bb.jpg")
@@ -127,12 +199,13 @@ class PlayerFragment : Fragment() {
             }
         }
         playerViewModel.observeIsFavoriteLiveData().observe(viewLifecycleOwner) {
-            if (it){
+            if (it) {
                 binding.favourite.setImageResource(R.drawable.ic_favourite_is_active_25_23)
-                track?.isFavorite=it
-            }  else{
+                track?.isFavorite = it
+            } else {
                 binding.favourite.setImageResource(R.drawable.ic_favourite_25_23)
-                track?.isFavorite=it}
+                track?.isFavorite = it
+            }
         }
         binding.favourite.setOnClickListener {
             playerViewModel.onFavoriteClicked(track!!)
@@ -142,6 +215,35 @@ class PlayerFragment : Fragment() {
             playerViewModel.onPlayButtonClicked()
         }
 
+
+    }
+
+
+    private fun render(playListState: PlayListState) {
+        when (playListState) {
+            is PlayListState.Empty -> {showEmpty(playListState.message)}
+            is PlayListState.Content -> showContent(playListState.albums)
+        }
+    }
+
+        private fun showEmpty(message: String){
+            binding.recyclerBottomSheet.visibility = View.GONE
+            binding.tvPlaceHolder.apply {
+                text = message
+                visibility = View.VISIBLE
+            }
+            binding.mediaImagePlaceHolder.visibility= View.VISIBLE
+    }
+    private fun showContent(content: List<Album>) {
+        adapter = AlbumsBottomSheetAdapter(content, { album ->
+            playerViewModel.insertTrackInAlbum(album, arguments?.getParcelable<Track>(TRACK_KEY)!!)
+        })
+        binding.recyclerBottomSheet.layoutManager = LinearLayoutManager(requireContext())
+        binding.tvPlaceHolder.visibility= View.GONE
+        binding.mediaImagePlaceHolder.visibility= View.GONE
+        binding.recyclerBottomSheet.visibility = View.VISIBLE
+        binding.recyclerBottomSheet.adapter = adapter
+        adapter.notifyDataSetChanged()
     }
 
     override fun onDestroyView() {

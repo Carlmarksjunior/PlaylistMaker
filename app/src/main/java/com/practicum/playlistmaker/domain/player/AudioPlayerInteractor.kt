@@ -3,6 +3,8 @@ package com.practicum.playlistmaker.domain.player
 import com.practicum.playlistmaker.domain.player.impl.PlayerState
 
 interface AudioPlayerInteractor {
+
+    fun reset()
     fun setDataSource(url: String)
 
     fun prepareAsync()

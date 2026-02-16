@@ -1,11 +1,11 @@
-package com.practicum.playlistmaker.data.db.dao
+package com.practicum.playlistmaker.data.db.favouritesTracksDb.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.practicum.playlistmaker.data.db.entity.TrackEntity
+import com.practicum.playlistmaker.data.db.favouritesTracksDb.entity.TrackEntity
 
 
 @Dao

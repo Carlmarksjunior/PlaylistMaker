@@ -1,11 +1,11 @@
-package com.practicum.playlistmaker.data.db.convertor
+package com.practicum.playlistmaker.data.db.favouritesTracksDb.convertor
 
-import com.practicum.playlistmaker.data.db.entity.TrackEntity
+import com.practicum.playlistmaker.data.db.favouritesTracksDb.entity.TrackEntity
 import com.practicum.playlistmaker.domain.search.model.Track
 
 class TrackDbConvertor {
 
-    fun map(track: Track): TrackEntity{
+    fun map(track: Track): TrackEntity {
         return TrackEntity(
             track.trackId.toString(),
             track.artworkUrl100,

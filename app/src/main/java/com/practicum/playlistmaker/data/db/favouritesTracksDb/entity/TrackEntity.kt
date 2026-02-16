@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.data.db.entity
+package com.practicum.playlistmaker.data.db.favouritesTracksDb.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

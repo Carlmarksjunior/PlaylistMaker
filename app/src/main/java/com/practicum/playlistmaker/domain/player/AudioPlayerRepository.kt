@@ -1,6 +1,8 @@
 package com.practicum.playlistmaker.domain.player
 
 interface AudioPlayerRepository {
+
+    fun reset()
     fun setDataSource(url: String)
     fun prepareAsync()
     fun start()

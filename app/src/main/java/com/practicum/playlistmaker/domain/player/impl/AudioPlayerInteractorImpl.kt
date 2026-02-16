@@ -9,6 +9,9 @@ class AudioPlayerInteractorImpl(
 ): AudioPlayerInteractor {
     private var currentState: PlayerState = PlayerState.DEFAULT
 
+    override fun reset() {
+        audioPlayerRepository.reset()
+    }
     override fun setDataSource(url: String) {
         audioPlayerRepository.setDataSource(url)
     }
