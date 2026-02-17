@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.data.db.playListDb.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -12,8 +11,8 @@ interface AlbumDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAlbum(albumEntity: AlbumEntity)
 
-    @Delete(entity = AlbumEntity::class)
-    suspend fun deleteAlbum(albumEntity: AlbumEntity)
+    @Query("DELETE from album_table WHERE id= :albumId")
+    suspend fun deleteAlbumById(albumId: Int)
 
     @Query("SELECT * FROM album_table")
     suspend fun getAllAlbums(): List<AlbumEntity>

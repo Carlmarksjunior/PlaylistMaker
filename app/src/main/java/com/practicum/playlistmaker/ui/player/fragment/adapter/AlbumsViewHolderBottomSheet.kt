@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.ui.player.fragment.adapter
 
+import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -8,7 +9,8 @@ import com.practicum.playlistmaker.databinding.ItemAlbumBottomSheetBinding
 import com.practicum.playlistmaker.domain.db.playLists.model.Album
 import java.io.File
 
-class AlbumsViewHolderBottomSheet(private val binding: ItemAlbumBottomSheetBinding): RecyclerView.ViewHolder(binding.root) {
+class AlbumsViewHolderBottomSheet(private val binding: ItemAlbumBottomSheetBinding,
+                                  private val context: Context?): RecyclerView.ViewHolder(binding.root) {
 
     fun bind(album: Album,clickListener:(Album)-> Unit){
         binding.apply {
@@ -29,10 +31,6 @@ class AlbumsViewHolderBottomSheet(private val binding: ItemAlbumBottomSheetBindi
 
     }
     private fun getPluralTracks(count: Int): String {
-        return when {
-            count % 10 == 1 && count % 100 != 11 -> "$count трек"
-            count % 10 in 2..4 && (count % 100 !in 12..14) -> "$count трека"
-            else -> "$count треков"
-        }
+        return context?.resources!!.getQuantityString(R.plurals.tracks_count,count,count)
     }
 }

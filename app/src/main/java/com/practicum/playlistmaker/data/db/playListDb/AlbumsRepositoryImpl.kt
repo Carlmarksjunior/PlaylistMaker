@@ -18,8 +18,8 @@ class AlbumsRepositoryImpl(private val appDataBaseAlbum: AppDataBaseAlbum,
         appDataBaseAlbum.albumDao().insertAlbum(albumDbConvertor.map(album))
     }
 
-    override suspend fun deleteAlbum(album: Album) {
-        appDataBaseAlbum.albumDao().deleteAlbum(albumDbConvertor.map(album))
+    override suspend fun deleteAlbumById(albumId: Int){
+        appDataBaseAlbum.albumDao().deleteAlbumById(albumId = albumId)
     }
 
     override fun getAllAlbums(): Flow<List<Album>> = flow {

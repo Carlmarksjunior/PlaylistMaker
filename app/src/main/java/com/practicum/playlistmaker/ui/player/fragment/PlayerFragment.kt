@@ -59,16 +59,16 @@ class PlayerFragment : Fragment() {
                 is TrackInAlbumState.isSucces -> {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                     Toast.makeText(
-                        requireActivity(),
-                        "Добавлено в плейлист [{${it.name}}]",
+                        requireContext(),
+                        getString(R.string.add_to_playlist,it.name),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
 
                 is TrackInAlbumState.isFail -> {
                     Toast.makeText(
-                        requireActivity(),
-                        "Трек уже добавлен в плейлист [${it.name}]",
+                        requireContext(),
+                        getString(R.string.track_in_playlist,it.name),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -94,8 +94,7 @@ class PlayerFragment : Fragment() {
                 }
             }
 
-            override fun onSlide(p0: View, p1: Float) {
-            }
+            override fun onSlide(p0: View, p1: Float) = Unit
         })
 
         binding.bottomSheetButton.setOnClickListener {
@@ -226,16 +225,16 @@ class PlayerFragment : Fragment() {
         }
     }
 
-        private fun showEmpty(message: String){
+        private fun showEmpty(message: Int){
             binding.recyclerBottomSheet.visibility = View.GONE
             binding.tvPlaceHolder.apply {
-                text = message
+                text = context.getString(message)
                 visibility = View.VISIBLE
             }
             binding.mediaImagePlaceHolder.visibility= View.VISIBLE
     }
     private fun showContent(content: List<Album>) {
-        adapter = AlbumsBottomSheetAdapter(content, { album ->
+        adapter = AlbumsBottomSheetAdapter(content,context, { album ->
             playerViewModel.insertTrackInAlbum(album, arguments?.getParcelable<Track>(TRACK_KEY)!!)
         })
         binding.recyclerBottomSheet.layoutManager = LinearLayoutManager(requireContext())

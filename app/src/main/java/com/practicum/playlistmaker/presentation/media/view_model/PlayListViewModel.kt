@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.presentation.media.view_model
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,13 +24,10 @@ class PlayListViewModel(
             albumInteractor.getAllAlbums().collect {
                 if (it.isNotEmpty()) {
                     playerListStateLiveData.postValue(PlayListState.Content(it))
-                    Log.d("123", "$it")
                 } else {
                     playerListStateLiveData.postValue(
                         PlayListState.Empty(
-                            message = context.getString(
-                                R.string.playListIsEmpty
-                            )
+                            message = R.string.playListIsEmpty
                         )
                     )
                 }

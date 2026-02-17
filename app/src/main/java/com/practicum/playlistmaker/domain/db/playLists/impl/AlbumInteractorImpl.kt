@@ -11,8 +11,8 @@ class AlbumInteractorImpl(private val albumsRepositoryImpl: AlbumsRepository): A
         albumsRepositoryImpl.insertAlbum(album)
     }
 
-    override suspend fun deleteAlbum(album: Album) {
-        albumsRepositoryImpl.deleteAlbum(album)
+    override suspend fun deleteAlbumsById(albumId: Int) {
+        albumsRepositoryImpl.deleteAlbumById(albumId)
     }
 
     override fun getAllAlbums(): Flow<List<Album>> {

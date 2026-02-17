@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.domain.db.playLists.AlbumInteractor
 import com.practicum.playlistmaker.domain.db.playLists.model.Album
-import com.practicum.playlistmaker.presentation.settings.view_model.SingleLiveEvent
+import com.practicum.playlistmaker.presentation.playList.state.PlayListCreateState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -21,20 +21,26 @@ import java.io.FileOutputStream
 class PlayListCreateViewModel(private val albumInteractor: AlbumInteractor,
     private val context: Context): ViewModel() {
 
+    private val albumLiveData = MutableLiveData<PlayListCreateState>(PlayListCreateState())
+    fun observerAlbumLiveData(): LiveData<PlayListCreateState> = albumLiveData
 
-    private val insertTrackLiveData = SingleLiveEvent<Boolean>()
-    fun observerInsertTrackLiveData(): LiveData<Boolean> = insertTrackLiveData
+    private val insertAlbumState = MutableLiveData<Boolean>()
+    fun observeInsertAlbumState(): LiveData<Boolean> = insertAlbumState
+    fun saveNameAlbum(name: String){
+        albumLiveData.postValue(albumLiveData.value?.copy(albumName = name))
 
-    private val pathImageLiveData = MutableLiveData<String>()
-    fun observePathImageLiveData(): LiveData<String> = pathImageLiveData
+    }
+
+    fun saveDescriptionAlbum(description: String){
+        albumLiveData.postValue(albumLiveData.value?.copy(albumDescription = description))
+    }
     fun insertAlbum(album: Album){
         viewModelScope.launch(Dispatchers.IO) {
             if (!albumInteractor.isAlbumExists(album.albumName)){
                 albumInteractor.insertAlbum(album)
-                insertTrackLiveData.postValue(true)
-
+                insertAlbumState.postValue(true)
             }else{
-                insertTrackLiveData.postValue(false)
+                insertAlbumState.postValue(false)
             }
 
         }
@@ -49,7 +55,7 @@ class PlayListCreateViewModel(private val albumInteractor: AlbumInteractor,
             filePath.mkdirs()
         }
         val file = File(filePath, name)
-            pathImageLiveData.postValue(file.toString())
+            albumLiveData.postValue(albumLiveData.value?.copy(albumImagePath = file.toString()))
         val inputStream = context.contentResolver.openInputStream(uri)
         val outputStream = FileOutputStream(file)
         BitmapFactory

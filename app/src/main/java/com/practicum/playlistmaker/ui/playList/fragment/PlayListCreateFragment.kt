@@ -1,8 +1,6 @@
 package com.practicum.playlistmaker.ui.playList.fragment
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +8,13 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayListCreateBinding
 import com.practicum.playlistmaker.domain.db.playLists.model.Album
 import com.practicum.playlistmaker.presentation.playList.view_model.PlayListCreateViewModel
@@ -25,9 +25,6 @@ class PlayListCreateFragment : Fragment() {
     private var _binding: FragmentPlayListCreateBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var textWatcherForName: TextWatcher
-
-    private lateinit var textWatcherForDescription: TextWatcher
 
     private var albumName: String? = null
 
@@ -50,6 +47,20 @@ class PlayListCreateFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        playListCreateViewModel.observerAlbumLiveData().observe(viewLifecycleOwner){
+            albumName=it.albumName
+            albumImagePath = it.albumImagePath
+            albumDescription = it.albumDescription
+        }
+
+        playListCreateViewModel.observeInsertAlbumState().observe(viewLifecycleOwner){
+            if (it){
+                Toast.makeText(requireContext(), getString(R.string.complete_create_playlist,albumName), Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            }else{
+                Toast.makeText(requireContext(), getString(R.string.playlist_exists,albumName), Toast.LENGTH_SHORT).show()
+            }
+        }
         binding.backButtonPlayList.setOnClickListener {
             if (!albumName.isNullOrEmpty()||!albumImagePath.isNullOrEmpty()||!albumDescription.isNullOrEmpty()){
                 confirmDialog.show()
@@ -64,67 +75,39 @@ class PlayListCreateFragment : Fragment() {
                     .load(uri)
                     .transform(RoundedCorners(8))
                     .into(binding.imagePlayList)
-                albumImagePath = "album_cover_${System.currentTimeMillis()}.jpg"
-                playListCreateViewModel.saveImageToPrivateStorage(uri,albumImagePath?:"")
-            }else{}
+                playListCreateViewModel.saveImageToPrivateStorage(uri,"album_cover_${System.currentTimeMillis()}.jpg")
+            }else{
+                Toast.makeText(requireActivity(), getString(R.string.playlist_exists,albumName), Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.imagePlayList.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
-        playListCreateViewModel.observePathImageLiveData().observe(viewLifecycleOwner){
-            albumImagePath = it
+
+
+        binding.namePlayList.doOnTextChanged { p0,p1,p2,p3 ->
+            binding.createButton.isEnabled = !p0.isNullOrEmpty()&&!p0.isBlank()
+            playListCreateViewModel.saveNameAlbum(p0?.toString()?.trimStart()?:"")
         }
 
-        textWatcherForName = object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-            }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                binding.createButton.isEnabled = !p0.isNullOrEmpty()
-                albumName = p0?.toString()?: ""
-            }
-
+        binding.discriptionPlayList.doOnTextChanged { p0,p1,p2,p3 ->
+            playListCreateViewModel.saveDescriptionAlbum(p0?.toString()?.trimStart()?: "")
         }
-        textWatcherForName.let { binding.namePlayList.addTextChangedListener(it) }
-
-        textWatcherForDescription = object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {}
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                albumDescription = p0?.toString()?: ""
-            }
-
-        }
-        textWatcherForDescription.let { binding.discriptionPlayList.addTextChangedListener(it)}
 
         binding.createButton.setOnClickListener {
             playListCreateViewModel.insertAlbum(Album(albumName = albumName, albumDescription = albumDescription, pathImage = albumImagePath))
 
         }
 
-        playListCreateViewModel.observerInsertTrackLiveData().observe(viewLifecycleOwner){
-            if (it){
-                Toast.makeText(requireActivity(), "Плейлист '$albumName' создан", Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack()
-            }else{
-                Toast.makeText(requireActivity(), "Плейлист c именем: '$albumName' уже существует", Toast.LENGTH_SHORT).show()
-
-            }
-        }
 
         confirmDialog = MaterialAlertDialogBuilder(requireActivity())
-            .setTitle("Завершить создание плейлиста?")
-            .setMessage("Все несохраненные данные будут потеряны")
-            .setNegativeButton("Отмена"){dialog, which->}
-            .setPositiveButton("Завершить"){dialog,whish -> findNavController().popBackStack()}
+            .setTitle(R.string.finish_to_create_playlist)
+            .setMessage(R.string.all_data_will_be_lose)
+            .setNegativeButton(R.string.cancel){dialog, which->}
+            .setPositiveButton(R.string.finish){dialog,whish -> findNavController().popBackStack()}
 
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,object : OnBackPressedCallback(true){

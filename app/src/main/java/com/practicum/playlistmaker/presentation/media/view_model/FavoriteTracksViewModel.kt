@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.presentation.media.view_model
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FavoriteTracksViewModel(
-    private val context: Context,
     private val favoriteTracksInteractor: FavouritesTracksInteractor
 ) : ViewModel() {
 
@@ -25,7 +23,7 @@ class FavoriteTracksViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             favoriteTracksInteractor.getAllTracks().collect {
                 if (it.isEmpty()) {
-                    renderState(FavoriteTracksState.Empty(message = context.getString(R.string.mediaIsempty)))
+                    renderState(FavoriteTracksState.Empty(message = R.string.mediaIsempty))
                 } else {
                     renderState(FavoriteTracksState.Content(it))
                     Log.e("meesage", "asd $it")

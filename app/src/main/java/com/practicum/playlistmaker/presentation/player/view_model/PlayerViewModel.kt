@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.presentation.player.view_model
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,6 +15,7 @@ import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.presentation.media.view_model.state.PlayListState
 import com.practicum.playlistmaker.presentation.player.view_model.state.PlayerState
 import com.practicum.playlistmaker.presentation.player.view_model.state.TrackInAlbumState
+import com.practicum.playlistmaker.presentation.settings.view_model.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -27,7 +27,6 @@ class PlayerViewModel(
     private val mediaPlayer: AudioPlayerInteractor,
     private val favouritesTracksInteractor: FavouritesTracksInteractor,
     private val albumInteractor: AlbumInteractor,
-    private val context: Context
 ) : ViewModel() {
     companion object {
 
@@ -41,7 +40,7 @@ class PlayerViewModel(
     private val playerStateLiveData = MutableLiveData<PlayerState>(PlayerState.Default())
     fun observePlayerStateLiveData(): LiveData<PlayerState> = playerStateLiveData
 
-    private val trackInAlbumLiveData = MutableLiveData<TrackInAlbumState>()
+    private val trackInAlbumLiveData = SingleLiveEvent<TrackInAlbumState>()
     fun observeTrackInAlbumLiveData(): LiveData<TrackInAlbumState> = trackInAlbumLiveData
 
     private val isFavoriteLiveData = MutableLiveData<Boolean>()
@@ -80,7 +79,7 @@ class PlayerViewModel(
                     albumsLiveData.postValue(PlayListState.Content(it))
                     Log.d("123", "$it")
                 } else {
-                    albumsLiveData.postValue(PlayListState.Empty(message = context.getString(R.string.playListIsEmpty)))
+                    albumsLiveData.postValue(PlayListState.Empty(message = R.string.playListIsEmpty))
                 }
 
             }

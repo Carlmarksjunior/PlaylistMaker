@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -29,7 +30,7 @@ class PlayListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPlayListsBinding.inflate(inflater,container,false)
+        _binding = FragmentPlayListsBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -40,32 +41,32 @@ class PlayListFragment : Fragment() {
             findNavController().navigate(R.id.action_mediaFragment_to_playListCreateFragment)
         }
         playListViewModel.getAllAlbums()
-        playListViewModel.observePlayerListLiveData().observe(viewLifecycleOwner){
+        playListViewModel.observePlayerListLiveData().observe(viewLifecycleOwner) {
             render(it)
         }
 
     }
 
-    private fun render(playListState: PlayListState){
-        when(playListState){
-            is PlayListState.Empty ->{showEmpty(playListState.message)
-            }
+    private fun render(playListState: PlayListState) {
+        when (playListState) {
+            is PlayListState.Empty -> showEmpty(playListState.message)
             is PlayListState.Content -> showContent(playListState.albums)
         }
     }
 
-    private fun showEmpty(message: String){
-        binding.mediaImagePlaceHolder.visibility = View.VISIBLE
+    private fun showEmpty(message: Int) {
+        binding.mediaImagePlaceHolder.isVisible = true
         binding.tvPlaceHolder.apply {
-            visibility = View.VISIBLE
-            text = message
+            isVisible = true
+            text = context.getString(message)
         }
 
         binding.recyclerViewAlbums.visibility = View.GONE
     }
-    private fun showContent(content:List<Album>){
-        adapter = AlbumsAdapter(content)
-        binding.recyclerViewAlbums.layoutManager = GridLayoutManager(requireActivity(),2)
+
+    private fun showContent(content: List<Album>) {
+        adapter = AlbumsAdapter(content, context)
+        binding.recyclerViewAlbums.layoutManager = GridLayoutManager(requireActivity(), 2)
         binding.mediaImagePlaceHolder.visibility = View.GONE
         binding.tvPlaceHolder.visibility = View.GONE
         binding.recyclerViewAlbums.visibility = View.VISIBLE
