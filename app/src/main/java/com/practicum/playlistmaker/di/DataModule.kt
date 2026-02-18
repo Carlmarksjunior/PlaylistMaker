@@ -3,7 +3,9 @@ package com.practicum.playlistmaker.di
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson
-import com.practicum.playlistmaker.data.db.database.AppDataBase
+import com.practicum.playlistmaker.data.db.favouritesTracksDb.database.AppDataBase
+import com.practicum.playlistmaker.data.db.playListDb.dataBase.AppDataBaseAlbum
+import com.practicum.playlistmaker.data.db.tracksInAlbumDb.database.AppDataBaseTrackInAlbum
 import com.practicum.playlistmaker.data.preferences.SharedPreferenceManager
 import com.practicum.playlistmaker.data.search.NetworkClient
 import com.practicum.playlistmaker.data.search.network.ItunesApiService
@@ -15,6 +17,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val dataModule = module {
+
+    single {
+        Room.databaseBuilder(androidContext(), AppDataBaseTrackInAlbum::class.java,"trackInAlbumDataBase.db").build()
+    }
+
+    single {
+        Room.databaseBuilder(androidContext(), AppDataBaseAlbum::class.java,"albumDataBase.db").build()
+    }
 
     single {
         Room.databaseBuilder(androidContext(), AppDataBase::class.java,"database.db").build()

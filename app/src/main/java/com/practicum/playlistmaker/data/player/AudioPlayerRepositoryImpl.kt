@@ -5,6 +5,10 @@ import com.practicum.playlistmaker.domain.player.AudioPlayerRepository
 
 class AudioPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : AudioPlayerRepository {
 
+
+    override fun reset() {
+        mediaPlayer.reset()
+    }
     override fun setDataSource(url: String) {
 
         mediaPlayer.setDataSource(url)

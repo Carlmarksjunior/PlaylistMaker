@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="smallTextSize12">12sp</dimen>
     <dimen name="smallTextSize13">13sp</dimen>
     <dimen name="smallTextSize14">14sp</dimen>
+    <dimen name="medium_textSize16">16sp</dimen>
     <dimen name="medium_textSize">16sp</dimen>
+    <dimen name="medium_textSize19">19sp</dimen>
     <dimen name="well_textSize">22sp</dimen>
+    <dimen name="margin2">2dp</dimen>
     <dimen name="margin4">4dp</dimen>
     <dimen name="marginTop8">8dp</dimen>
     <dimen name="marginTop12">12dp</dimen>
     <dimen name="marginTop14">14dp</dimen>
+    <dimen name="marginTop18">18dp</dimen>
     <dimen name="marginTop20">20dp</dimen>
     <dimen name="marginTop">24dp</dimen>
     <dimen name="marginTop26">26dp</dimen>
     <dimen name="marginTop28">28dp</dimen>
     <dimen name="marginTop30">30dp</dimen>
     <dimen name="marginTop32">32dp</dimen>
+    <dimen name="marginTop42">42dp</dimen>
     <dimen name="marginTop46">46dp</dimen>
     <dimen name="marginTop52">52dp</dimen>
     <dimen name="cornerRadius10">10dp</dimen>
@@ -25,6 +31,10 @@
     <dimen name="textSizePlaceHolder">19sp</dimen>
     <dimen name="marginTop106">106dp</dimen>
     <dimen name="marginTop110">110dp</dimen>
+    <dimen name="marginTop160">160dp</dimen>
+    <dimen name="marginTop196">196dp</dimen>
+    <dimen name="marginTop312">312dp</dimen>
+    <dimen name="bottom_sheet_peek_height">240dp</dimen>
 
 
 </resources>

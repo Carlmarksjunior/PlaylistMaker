@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -53,19 +55,20 @@ class FavoritesTracksFragment : Fragment() {
 
     private fun render(state: FavoriteTracksState){
         when(state){
-            is FavoriteTracksState.Empty -> showEmpty()
+            is FavoriteTracksState.Empty -> showEmpty(state.message)
             is FavoriteTracksState.Content ->showContent(state.tracks)
         }
     }
-    private fun showEmpty(){
-        binding.mediaImagePlaceHolder.visibility = View.VISIBLE
-        binding.textPlaceholder.visibility = View.VISIBLE
+    private fun showEmpty(@StringRes message: Int){
+        binding.textPlaceholder.text = context?.getString(message)
+        binding.mediaImagePlaceHolder.isVisible = true
+        binding.textPlaceholder.isVisible = true
         binding.recyclerViewTracks.visibility = View.GONE
     }
     private fun showContent(tracks: List<Track>){
         binding.mediaImagePlaceHolder.visibility = View.GONE
         binding.textPlaceholder.visibility = View.GONE
-        binding.recyclerViewTracks.visibility = View.VISIBLE
+        binding.recyclerViewTracks.isVisible = true
         adapter.trackList.clear()
         adapter.trackList.addAll(tracks)
         adapter.notifyDataSetChanged()

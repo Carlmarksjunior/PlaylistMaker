@@ -13,10 +13,12 @@
     <color name="black0">#FF000000</color>
     <color name="gray">#FFAEAFB4</color>
     <color name="primeGray">#AEAFB4</color>
+    <color name="primeGrayEdit">#AEAFB4</color>
     <color name="lightGray">#FFE6E8EB</color>
     <color name="placeholderBack">#FF1A1B22</color>
     <color name="placeholderText">#FFFFFFFF</color>
     <color name="thumbTint">#FFAEAFB4</color>
     <color name="trackTint">#FFE6E8EB</color>
     <color name="viewSeparatorColor">#FFE6E8EB</color>
+
 </resources>
