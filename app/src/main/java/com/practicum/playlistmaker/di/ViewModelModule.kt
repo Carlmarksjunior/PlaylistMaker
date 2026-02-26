@@ -1,8 +1,10 @@
 package com.practicum.playlistmaker.di
 
+import com.practicum.playlistmaker.presentation.detailsPlayList.DetailsPlayListViewModel
 import com.practicum.playlistmaker.presentation.media.view_model.FavoriteTracksViewModel
 import com.practicum.playlistmaker.presentation.media.view_model.PlayListViewModel
 import com.practicum.playlistmaker.presentation.playList.view_model.PlayListCreateViewModel
+import com.practicum.playlistmaker.presentation.playList.view_model.PlayListRedactViewModel
 import com.practicum.playlistmaker.presentation.player.view_model.PlayerViewModel
 import com.practicum.playlistmaker.presentation.search.view_model.SearchViewModel
 import com.practicum.playlistmaker.presentation.settings.view_model.SettingsViewModel
@@ -13,6 +15,14 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
 
+
+    viewModel{
+        PlayListRedactViewModel(get(),get())
+    }
+
+    viewModel{
+        DetailsPlayListViewModel(get(),get())
+    }
 
     viewModel{
         PlayListCreateViewModel(get(),androidContext())

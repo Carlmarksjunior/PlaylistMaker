@@ -9,7 +9,9 @@ import com.practicum.playlistmaker.databinding.ItemPlaylistBinding
 import com.practicum.playlistmaker.domain.db.playLists.model.Album
 import java.io.File
 
-class AlbumsViewHolder(private val binding: ItemPlaylistBinding, private val context: Context?): RecyclerView.ViewHolder(binding.root) {
+class AlbumsViewHolder(private val binding: ItemPlaylistBinding,
+                       private val context: Context?,
+                       private val clickListener:(Album)-> Unit): RecyclerView.ViewHolder(binding.root) {
 
     fun bind(album: Album){
 
@@ -23,6 +25,9 @@ class AlbumsViewHolder(private val binding: ItemPlaylistBinding, private val con
                 .into(binding.imageViewItemAlbum)
             tvNameItemAlbum.text = album.albumName
             tvTracksItemAlbum.text = getPluralTracks(album.tracksCount)
+            root.setOnClickListener {
+                clickListener(album)
+            }
         }
 
     }

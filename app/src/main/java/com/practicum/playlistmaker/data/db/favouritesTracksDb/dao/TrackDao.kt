@@ -22,4 +22,8 @@ interface TrackDao {
     @Query("SELECT Id FROM track_table")
     suspend fun getAllIdTracks():List<String>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM track_table WHERE Id = :trackId)")
+    suspend fun isTrackExists(trackId: String): Boolean
+
+
 }

@@ -24,5 +24,9 @@ class FavouritesTracksRepositoryImpl(private val appDataBase: AppDataBase,
         emit(tracks.map { trackDbConvertor.map(it) })
     }
 
+    override suspend fun isTrackExists(trackId: String): Boolean {
+        return appDataBase.trackDao().isTrackExists(trackId)
+    }
+
 
 }

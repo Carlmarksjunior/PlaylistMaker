@@ -19,12 +19,25 @@ class AlbumInteractorImpl(private val albumsRepositoryImpl: AlbumsRepository): A
         return albumsRepositoryImpl.getAllAlbums()
     }
 
+    override fun getAlbumFromId(albumId: Int): Flow<Album> {
+        return albumsRepositoryImpl.getAlbumFromId(albumId)
+    }
+
     override suspend fun updateTracksInfoInAlbum(
         albumId: Int,
         tracksIds: String,
         tracksCount: Int
     ) {
         albumsRepositoryImpl.updatesTracksInfoInAlbum(albumId, tracksIds,tracksCount)
+    }
+
+    override suspend fun updateAlbumFromId(
+        albumId: Int,
+        albumName: String,
+        albumDescription: String,
+        albumPathImage: String
+    ) {
+        albumsRepositoryImpl.updateAlbumFromId(albumId,albumName,albumDescription,albumPathImage)
     }
 
 
@@ -34,5 +47,13 @@ class AlbumInteractorImpl(private val albumsRepositoryImpl: AlbumsRepository): A
 
     override suspend fun insertTrackInAlbum(track: Track) {
         albumsRepositoryImpl.insertTrackInAlbum(track)
+    }
+
+    override fun getTracksByIds(trackIds: List<String>): Flow<List<Track>> {
+        return albumsRepositoryImpl.getTracksByIds(trackIds)
+    }
+
+    override suspend fun deleteTrackById(trackId: Int) {
+        albumsRepositoryImpl.deleteTrackById(trackId)
     }
 }

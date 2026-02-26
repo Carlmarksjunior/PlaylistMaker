@@ -20,21 +20,21 @@ import com.practicum.playlistmaker.domain.db.playLists.model.Album
 import com.practicum.playlistmaker.presentation.playList.view_model.PlayListCreateViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PlayListCreateFragment : Fragment() {
+open class PlayListCreateFragment : Fragment() {
 
     private var _binding: FragmentPlayListCreateBinding? = null
-    private val binding get() = _binding!!
+    open val binding get() = _binding!!
 
 
-    private var albumName: String? = null
+    open var albumName: String? = null
 
-    private var albumImagePath: String? = null
+    open var albumImagePath: String? = null
 
-    private var albumDescription: String? = null
+    open var albumDescription: String? = null
 
-    private val playListCreateViewModel by viewModel<PlayListCreateViewModel>()
+    open val playListCreateViewModel by viewModel<PlayListCreateViewModel>()
 
-    lateinit var confirmDialog: MaterialAlertDialogBuilder
+    open lateinit var confirmDialog: MaterialAlertDialogBuilder
 
 
     override fun onCreateView(
@@ -89,12 +89,12 @@ class PlayListCreateFragment : Fragment() {
 
         binding.namePlayList.doOnTextChanged { p0,p1,p2,p3 ->
             binding.createButton.isEnabled = !p0.isNullOrEmpty()&&!p0.isBlank()
-            playListCreateViewModel.saveNameAlbum(p0?.toString()?.trimStart()?:"")
+            this.albumName=p0?.toString()?.trimStart()?:""
         }
 
 
         binding.discriptionPlayList.doOnTextChanged { p0,p1,p2,p3 ->
-            playListCreateViewModel.saveDescriptionAlbum(p0?.toString()?.trimStart()?: "")
+            this.albumDescription = p0?.toString()?.trimStart()?: ""
         }
 
         binding.createButton.setOnClickListener {

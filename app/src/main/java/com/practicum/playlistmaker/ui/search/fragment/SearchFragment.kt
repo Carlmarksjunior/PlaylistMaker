@@ -5,7 +5,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -102,7 +101,6 @@ class SearchFragment : Fragment() {
                 searchViewModel.searchDebounce(
                     changedText = s?.toString() ?: ""
                 )
-                Log.d("Test", "првоерка $s")
             }
         }
         textWatcher.let { binding.editTextSearch.addTextChangedListener(it) }

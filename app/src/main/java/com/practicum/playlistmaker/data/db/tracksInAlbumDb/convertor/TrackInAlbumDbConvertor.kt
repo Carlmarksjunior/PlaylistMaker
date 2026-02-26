@@ -17,6 +17,7 @@ class TrackInAlbumDbConvertor {
             track.country,
             track.duration,
             track.previewUrl,
+            track.isFavorite
         )
     }
 
@@ -32,7 +33,7 @@ class TrackInAlbumDbConvertor {
             trackInAlbumEntity.primaryGenreName,
             trackInAlbumEntity.collectionName,
             trackInAlbumEntity.releaseYear,
-            isFavorite = true
+            trackInAlbumEntity.isFavorite
         )
     }
 }

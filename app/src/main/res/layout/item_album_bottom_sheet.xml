@@ -11,11 +11,14 @@
     android:paddingRight="@dimen/paddingRightTrack"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?attr/selectableItemBackgroundBorderless">
+    android:clipToOutline="true"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:background="@drawable/shape_image">
     <ImageView
         android:id="@+id/artAlbum"
         android:layout_width="45dp"
         android:layout_height="45dp"
+        android:clipToOutline="true"
         tools:src = "@drawable/ic_launcher_background"/>
     <LinearLayout
         android:layout_width="0dp"

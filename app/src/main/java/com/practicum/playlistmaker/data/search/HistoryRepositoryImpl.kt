@@ -23,6 +23,7 @@ class HistoryRepositoryImpl(private val sharedPreferenceManager: SharedPreferenc
             it.releaseYear,
             it.isFavorite == trackIds.contains(it.trackId.toString()))}
 
+
     }
 
     override fun saveTrack(track: Track) {

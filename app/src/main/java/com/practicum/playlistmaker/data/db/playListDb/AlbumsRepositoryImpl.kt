@@ -27,8 +27,22 @@ class AlbumsRepositoryImpl(private val appDataBaseAlbum: AppDataBaseAlbum,
         emit(albums.map { albumDbConvertor.map(it) })
     }
 
+    override fun getAlbumFromId(albumId: Int): Flow<Album> = flow {
+        val album = albumDbConvertor.map(appDataBaseAlbum.albumDao().getAlbumFromId(albumId))
+        emit(album)
+    }
+
     override suspend fun updatesTracksInfoInAlbum(albumId: Int, tracksIds: String, tracksCount: Int) {
         appDataBaseAlbum.albumDao().updateTracksInfoInAlbum(albumId,tracksIds,tracksCount)
+    }
+
+    override suspend fun updateAlbumFromId(
+        albumId: Int,
+        albumName: String,
+        albumDescription: String,
+        albumPathImage: String
+    ) {
+        appDataBaseAlbum.albumDao().updateAlbumFromId(albumId,albumName,albumDescription,albumPathImage)
     }
 
 
@@ -38,6 +52,15 @@ class AlbumsRepositoryImpl(private val appDataBaseAlbum: AppDataBaseAlbum,
 
     override suspend fun insertTrackInAlbum(track: Track) {
         appDataBaseTrackInAlbum.trackInAlbumDao().insertTrackInAlbum(trackInAlbumDbConvertor.map(track))
+    }
+
+    override fun getTracksByIds(trackIds: List<String>): Flow<List<Track>> = flow{
+        val tracks = appDataBaseTrackInAlbum.trackInAlbumDao().getTracksByIds(trackIds)
+        emit(tracks.map { trackInAlbumDbConvertor.map(it) })
+    }
+
+    override suspend fun deleteTrackById(trackId: Int) {
+        appDataBaseTrackInAlbum.trackInAlbumDao().deleteTrackById(trackId)
     }
 
 }
