@@ -89,12 +89,12 @@ open class PlayListCreateFragment : Fragment() {
 
         binding.namePlayList.doOnTextChanged { p0,p1,p2,p3 ->
             binding.createButton.isEnabled = !p0.isNullOrEmpty()&&!p0.isBlank()
-            this.albumName=p0?.toString()?.trimStart()?:""
+            this.albumName=p0?.toString()?.trimStart()?.trimEnd()?:""
         }
 
 
         binding.discriptionPlayList.doOnTextChanged { p0,p1,p2,p3 ->
-            this.albumDescription = p0?.toString()?.trimStart()?: ""
+            this.albumDescription = p0?.toString()?.trimStart()?.trimEnd()?: ""
         }
 
         binding.createButton.setOnClickListener {

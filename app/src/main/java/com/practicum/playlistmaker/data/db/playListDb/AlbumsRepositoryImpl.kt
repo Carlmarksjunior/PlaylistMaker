@@ -56,7 +56,8 @@ class AlbumsRepositoryImpl(private val appDataBaseAlbum: AppDataBaseAlbum,
 
     override fun getTracksByIds(trackIds: List<String>): Flow<List<Track>> = flow{
         val tracks = appDataBaseTrackInAlbum.trackInAlbumDao().getTracksByIds(trackIds)
-        emit(tracks.map { trackInAlbumDbConvertor.map(it) })
+        val sortedTrack = trackIds.mapNotNull { id-> tracks.find{it.trackId==id} }
+        emit(sortedTrack.map { trackInAlbumDbConvertor.map(it) })
     }
 
     override suspend fun deleteTrackById(trackId: Int) {

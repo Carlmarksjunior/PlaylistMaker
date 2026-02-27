@@ -10,20 +10,26 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         >
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_33_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.45" />
         <ImageView
             android:id="@+id/image_view_album"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/guideline_33_percent"
             android:background="@color/white"
             android:padding="48dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_placeholder_360"
-            />
+            android:src="@drawable/ic_placeholder_360" />
         <ImageButton
             android:id="@+id/back_button_play_list"
             android:layout_width="48dp"
@@ -42,6 +48,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/image_view_album"
             android:layout_marginStart="@dimen/marginSettings"
+            android:layout_marginTop="@dimen/marginTop"
             tools:text="Best Songs 2021"
             android:textSize="@dimen/well_textSize24"
             android:textAllCaps="false"
@@ -139,7 +146,7 @@
         app:behavior_hideable="false"
         app:behavior_peekHeight="0dp"
         app:behavior_fitToContents="false"
-        app:behavior_halfExpandedRatio="0.35"
+        app:behavior_halfExpandedRatio="0.33"
         android:orientation="vertical"
         android:background="@drawable/shape_to_bottomsheet"
         android:visibility="visible">

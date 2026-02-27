@@ -57,9 +57,15 @@ class DetailsPlayListFragment : Fragment() {
         binding.backButtonPlayList.setOnClickListener {
             findNavController().popBackStack()
         }
+        val displayMetrics = resources.displayMetrics
+        val screenHeightPx = displayMetrics.heightPixels
+
+
+        val peekHeightPx = (screenHeightPx * 0.33).toInt()
         val bottomSheetBehaviorStandard =
             BottomSheetBehavior.from(binding.standardBottomSheet).apply {
                 state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                peekHeight = peekHeightPx
             }
         albumId = arguments?.getInt(ALBUM_KEY)
         detailsPlayListViewModel.getAlbum(albumId!!)
@@ -101,21 +107,8 @@ class DetailsPlayListFragment : Fragment() {
 
 
 
-
-        detailsPlayListViewModel.observeShareAlbumState().observe(viewLifecycleOwner) {
-            when (it) {
-                is DetailsPlayListState.Content -> shareAlbum(it.album)
-                is DetailsPlayListState.Empty -> Toast.makeText(
-                    requireContext(),
-                    "${context?.getString(it.message)}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
         binding.shareAlbum.setOnClickListener {
             detailsPlayListViewModel.shareTracksInPlayList(albumId!!)
-
         }
         val bottomSheetBehaviorMenu = BottomSheetBehavior.from(binding.menuBottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
@@ -146,8 +139,29 @@ class DetailsPlayListFragment : Fragment() {
             detailsPlayListViewModel.shareTracksInPlayList(albumId!!)
         }
 
+        detailsPlayListViewModel.observeShareAlbumText().observe(viewLifecycleOwner){
+            if (!it.isNullOrEmpty()){
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(
+                        Intent.EXTRA_TEXT, getString(
+                            R.string.share_album_text,
+                            album.albumName, album.albumDescription,
+                            getPluralTracks(album.tracksCount), it
+                        )
+                    )
+                }
+                bottomSheetBehaviorMenu.state = BottomSheetBehavior.STATE_HIDDEN
+                startActivity(Intent.createChooser(intent, getString(R.string.share_app)))
+            }else{
+                Toast.makeText(requireContext(), R.string.track_in_album_Empty, Toast.LENGTH_SHORT).show()
+                bottomSheetBehaviorMenu.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+        }
+
         binding.deletePlaylist.setOnClickListener {
             deleteAlbum()
+            bottomSheetBehaviorMenu.state = BottomSheetBehavior.STATE_HIDDEN
         }
 
         binding.redactAlbum.setOnClickListener {
@@ -157,44 +171,12 @@ class DetailsPlayListFragment : Fragment() {
 
     }
 
-    private fun shareAlbum(album: Album) {
-        detailsPlayListViewModel.getTracks(album.tracksIds)
-        detailsPlayListViewModel.observeTracksState().observe(viewLifecycleOwner) {
-            when (it) {
-                is TrackState.Content -> {
-                    val tracksText = it.tracks.mapIndexed { index, track ->
-                        getString(
-                            R.string.item_track, index + 1,
-                            track.artistName, track.trackName, track.duration
-                        )
-                    }.joinToString("\n")
-                    val intent = Intent(Intent.ACTION_SEND).apply {
-                        type = "text/plain"
-                        putExtra(
-                            Intent.EXTRA_TEXT, getString(
-                                R.string.share_album_text,
-                                album.albumName, album.albumDescription,
-                                getPluralTracks(album.tracksCount), tracksText
-                            )
-                        )
-                    }
-                    startActivity(Intent.createChooser(intent, getString(R.string.share_app)))
-                }
-
-                is TrackState.Empty -> {}
-                is TrackState.History -> {}
-                is TrackState.Error -> {}
-                is TrackState.Loading -> {}
-            }
-        }
-
-    }
 
     fun deleteAlbum() {
         deleteConfirmDialog = MaterialAlertDialogBuilder(requireActivity())
             .setTitle(getString(R.string.do_you_want_delete_album, album.albumName))
-            .setNegativeButton(R.string.no) { dialog, which -> }
-            .setPositiveButton(R.string.yes) { dialog, whish ->
+            .setNegativeButton(R.string.cancel) { dialog, which -> }
+            .setPositiveButton(R.string.delete) { dialog, whish ->
                 detailsPlayListViewModel.deleteAlbum(
                     albumId!!
                 )
@@ -229,6 +211,7 @@ class DetailsPlayListFragment : Fragment() {
         })
         adapter.longListener = { deleteTrack(it.trackId) }
         adapter.updateData(content)
+
         binding.recyclerBottomSheet.adapter = adapter
         binding.recyclerBottomSheet.layoutManager = LinearLayoutManager(requireContext())
         adapter.notifyDataSetChanged()
@@ -236,6 +219,7 @@ class DetailsPlayListFragment : Fragment() {
     }
 
     private fun showAlbumContent(album: Album) {
+        val radius = binding.root.context.resources.getDimensionPixelSize(R.dimen.marginTop10)
         Glide.with(this)
             .load(album.pathImage ?: "")
             .placeholder(R.drawable.ic_placeholder_360)
@@ -244,7 +228,7 @@ class DetailsPlayListFragment : Fragment() {
             .load(album.pathImage ?: "")
             .placeholder(R.drawable.ic_placeholder_360)
             .centerCrop()
-            .transform(RoundedCorners(10))
+            .transform(RoundedCorners(radius))
             .into(binding.artAlbum)
 
         binding.nameAlbumTv.text = album.albumName ?: ""
@@ -264,8 +248,6 @@ class DetailsPlayListFragment : Fragment() {
         }
 
         val minutes = totalSeconds / 60
-//            val seconds = totalSeconds % 60
-//            val formattedDuration = String.format("%02d:%02d", minutes, seconds)
         binding.durationAllTracksTv.text = getPluralMinutes(minutes)
     }
 
@@ -273,6 +255,7 @@ class DetailsPlayListFragment : Fragment() {
         binding.mediaImagePlaceHolder.visibility = View.VISIBLE
         binding.tvPlaceHolder.visibility = View.VISIBLE
         binding.recyclerBottomSheet.visibility = View.GONE
+        binding.durationAllTracksTv.text = getPluralMinutes(0)
     }
 
     private fun getPluralTracks(count: Int): String {

@@ -19,7 +19,6 @@ class RootActivity: AppCompatActivity() {
         binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
         enableEdgeToEdge()
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.containerView) as NavHostFragment
         val navController = navHostFragment.findNavController()
 

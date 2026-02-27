@@ -33,6 +33,9 @@ class PlayListRedactFragment : PlayListCreateFragment() {
         get() = super.albumImagePath
         set(value) {super.albumImagePath = value}
 
+    private var isImageSelected = false
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,12 +49,16 @@ class PlayListRedactFragment : PlayListCreateFragment() {
         super.onViewCreated(view, savedInstanceState)
         albumId = arguments?.getInt(ALBUM_KEY)
         playListCreateViewModel.getAlbumFromId(albumId)
+        binding.backButtonPlayList.setOnClickListener {
+            findNavController().popBackStack()
+        }
         binding.mainTV.text = context?.getString(R.string.redact)
         binding.createButton.text = context?.getString(R.string.save)
 
         val pickMedia =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 if (uri != null) {
+                    isImageSelected = true
                     Glide.with(this)
                         .load(uri)
                         .transform(RoundedCorners(8))
@@ -100,11 +107,16 @@ class PlayListRedactFragment : PlayListCreateFragment() {
     }
 
     private fun showContent() {
-        binding.namePlayList.setText(this.albumName)
-        binding.discriptionPlayList.setText(this.albumDescription)
-        Glide.with(this)
-            .load(this.albumImagePath)
-            .into(binding.imagePlayList)
+            binding.namePlayList.setText(this.albumName)
+            binding.discriptionPlayList.setText(this.albumDescription)
+            if (!isImageSelected){
+                Glide.with(this)
+                    .load(this.albumImagePath)
+                    .into(binding.imagePlayList)
+            }
+            isImageSelected=false
+
+
     }
 
     companion object {

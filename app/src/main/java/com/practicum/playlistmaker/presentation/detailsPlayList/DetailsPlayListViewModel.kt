@@ -5,11 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.db.favouritesTracks.FavouritesTracksInteractor
 import com.practicum.playlistmaker.domain.db.playLists.AlbumInteractor
+import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.presentation.detailsPlayList.state.DetailsPlayListState
 import com.practicum.playlistmaker.presentation.search.view_model.state.TrackState
+import com.practicum.playlistmaker.presentation.settings.view_model.SingleLiveEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -30,8 +31,9 @@ class DetailsPlayListViewModel(
     private val deleteTrackState = MutableLiveData<Boolean>(false)
     fun observeDeleteTracksState(): LiveData<Boolean> = deleteTrackState
 
-    private val shareAlbumState = MutableLiveData<DetailsPlayListState>()
-    fun observeShareAlbumState(): LiveData<DetailsPlayListState> = shareAlbumState
+
+    private val shareAlbumText = SingleLiveEvent<String>()
+    fun observeShareAlbumText(): LiveData<String> = shareAlbumText
 
 
     private var listTracksIdsInAlbum: MutableList<String> = mutableListOf()
@@ -45,7 +47,7 @@ class DetailsPlayListViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             albumsInteractor.getAlbumFromId(albumId).collect {
                 albumState.postValue(DetailsPlayListState.Content(it))
-                getTracks(it.tracksIds)
+                getTracks(it.tracksIds.reversed())
             }
         }
     }
@@ -115,12 +117,21 @@ class DetailsPlayListViewModel(
         viewModelScope.launch {
             albumsInteractor.getAlbumFromId(albumId).collect {
                 if (it.tracksCount!=0){
-                    shareAlbumState.postValue(DetailsPlayListState.Content(it))
+                    albumsInteractor.getTracksByIds(it.tracksIds).collect {
+                        val tracksText = it.mapIndexed { index, track ->
+                            getTrackFormattedString(index+1,track)
+                        }.joinToString("\n")
+                        shareAlbumText.postValue(tracksText)
+                    }
                 }else{
-                    shareAlbumState.postValue(DetailsPlayListState.Empty(R.string.track_in_album_Empty))
+                    shareAlbumText.postValue("")
                 }
             }
         }
+    }
+
+    private fun getTrackFormattedString(position: Int, track: Track): String {
+        return "${position}. ${track.artistName} - ${track.trackName} [${track.duration}]"
     }
 
 

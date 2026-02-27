@@ -1,26 +1,28 @@
 package com.practicum.playlistmaker.presentation.playList.view_model
 
 import android.content.Context
-import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.domain.db.playLists.AlbumInteractor
 import com.practicum.playlistmaker.presentation.playList.state.PlayListCreateState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PlayListRedactViewModel(private val albumInteractor: AlbumInteractor,
-                              private val context: Context): PlayListCreateViewModel(albumInteractor,context){
+class PlayListRedactViewModel(
+    private val albumInteractor: AlbumInteractor,
+    private val context: Context
+) : PlayListCreateViewModel(albumInteractor, context) {
 
-
-
-
-
-
-    fun getAlbumFromId(albumId: Int?){
-        if (albumId!=null){
+    fun getAlbumFromId(albumId: Int?) {
+        if (albumId != null) {
             viewModelScope.launch(Dispatchers.IO) {
                 albumInteractor.getAlbumFromId(albumId).collect {
-                    albumLiveData.postValue(PlayListCreateState(albumName = it.albumName, albumDescription = it.albumDescription, albumImagePath = it.pathImage))
+                    albumLiveData.postValue(
+                        PlayListCreateState(
+                            albumName = it.albumName,
+                            albumDescription = it.albumDescription,
+                            albumImagePath = it.pathImage
+                        )
+                    )
                 }
 
             }
@@ -28,15 +30,15 @@ class PlayListRedactViewModel(private val albumInteractor: AlbumInteractor,
 
     }
 
-    fun updateAlbum(albumId: Int,alumName: String,albumDescription: String,albumPathImage: String){
+    fun updateAlbum(
+        albumId: Int,
+        alumName: String,
+        albumDescription: String,
+        albumPathImage: String
+    ) {
         viewModelScope.launch {
-            albumInteractor.updateAlbumFromId(albumId,alumName,albumDescription,albumPathImage)
+            albumInteractor.updateAlbumFromId(albumId, alumName, albumDescription, albumPathImage)
         }
-    }
-
-    override fun saveImageToPrivateStorage(uri: Uri, name: String) {
-        super.saveImageToPrivateStorage(uri, name)
-
     }
 
 
