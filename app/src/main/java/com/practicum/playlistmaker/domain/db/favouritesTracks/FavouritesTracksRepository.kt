@@ -8,4 +8,6 @@ interface FavouritesTracksRepository {
     suspend fun deleteTrack(track: Track)
     fun getAllTracks(): Flow<List<Track>>
 
+    suspend fun isTrackExists(trackId: String): Boolean
+
 }

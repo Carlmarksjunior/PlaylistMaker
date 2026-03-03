@@ -27,5 +27,6 @@ data class TrackInAlbumEntity(
     val duration: String?,
     @ColumnInfo(name = "Preview_Url")
     val previewUrl: String?,
-
+    @ColumnInfo(name = "Favourite")
+    val isFavorite: Boolean?
 )

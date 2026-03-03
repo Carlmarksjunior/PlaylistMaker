@@ -18,11 +18,11 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
-class PlayListCreateViewModel(private val albumInteractor: AlbumInteractor,
+open class PlayListCreateViewModel(private val albumInteractor: AlbumInteractor,
     private val context: Context): ViewModel() {
 
-    private val albumLiveData = MutableLiveData<PlayListCreateState>(PlayListCreateState())
-    fun observerAlbumLiveData(): LiveData<PlayListCreateState> = albumLiveData
+    open val albumLiveData = MutableLiveData<PlayListCreateState>(PlayListCreateState())
+    open fun observerAlbumLiveData(): LiveData<PlayListCreateState> = albumLiveData
 
     private val insertAlbumState = MutableLiveData<Boolean>()
     fun observeInsertAlbumState(): LiveData<Boolean> = insertAlbumState
@@ -46,7 +46,7 @@ class PlayListCreateViewModel(private val albumInteractor: AlbumInteractor,
         }
     }
     @SuppressLint("SuspiciousIndentation")
-    fun saveImageToPrivateStorage(uri: Uri, name: String) {
+    open fun saveImageToPrivateStorage(uri: Uri, name: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
         val filePath = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "myalbum")

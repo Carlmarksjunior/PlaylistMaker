@@ -5,11 +5,14 @@
     <dimen name="smallTextSize14">14sp</dimen>
     <dimen name="medium_textSize16">16sp</dimen>
     <dimen name="medium_textSize">16sp</dimen>
+    <dimen name="medium_textSize18">18sp</dimen>
     <dimen name="medium_textSize19">19sp</dimen>
     <dimen name="well_textSize">22sp</dimen>
+    <dimen name="well_textSize24">24sp</dimen>
     <dimen name="margin2">2dp</dimen>
     <dimen name="margin4">4dp</dimen>
     <dimen name="marginTop8">8dp</dimen>
+    <dimen name="marginTop10">10dp</dimen>
     <dimen name="marginTop12">12dp</dimen>
     <dimen name="marginTop14">14dp</dimen>
     <dimen name="marginTop18">18dp</dimen>

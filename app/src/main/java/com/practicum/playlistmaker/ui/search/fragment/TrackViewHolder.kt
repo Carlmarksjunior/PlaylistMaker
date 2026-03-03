@@ -23,7 +23,7 @@ class TrackViewHolder(private val binding: ItemTrackBinding) :
 
     private val radiusPx = dpToPx(10)
 
-    fun bind(track: Track, clickListener: (Track) -> Unit) {
+    fun bind(track: Track, clickListener: (Track) -> Unit, longListener:(Track) -> Unit) {
         Glide.with(itemView)
             .load(track.artworkUrl100)
             .placeholder(R.drawable.ic_placeholder_45)
@@ -37,6 +37,9 @@ class TrackViewHolder(private val binding: ItemTrackBinding) :
             clickListener(track)
 
         }
+        itemView.setOnLongClickListener {
+            longListener(track)
+            true}
     }
     fun RecyclerView.ViewHolder.dpToPx(dp: Int): Int {
         return (dp * itemView.context.resources.displayMetrics.density).toInt()

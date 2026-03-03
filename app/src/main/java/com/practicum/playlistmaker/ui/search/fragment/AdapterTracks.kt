@@ -10,6 +10,8 @@ class AdapterTracks(val clickListener: (Track) -> Unit): RecyclerView.Adapter<Tr
 
     val searchHistory: ArrayList<Track> = ArrayList<Track>()
 
+    var longListener:((Track)-> Unit) = {}
+
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(newTracks : List<Track>){
         trackList.clear()
@@ -21,7 +23,7 @@ class AdapterTracks(val clickListener: (Track) -> Unit): RecyclerView.Adapter<Tr
         TrackViewHolder.Companion.from(parent)
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        holder.bind(trackList[position], clickListener)
+        holder.bind(trackList[position], clickListener,longListener)
     }
 
     override fun getItemCount(): Int {

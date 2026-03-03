@@ -13,6 +13,7 @@ import com.practicum.playlistmaker.databinding.FragmentPlayListsBinding
 import com.practicum.playlistmaker.domain.db.playLists.model.Album
 import com.practicum.playlistmaker.presentation.media.view_model.PlayListViewModel
 import com.practicum.playlistmaker.presentation.media.view_model.state.PlayListState
+import com.practicum.playlistmaker.ui.detailsPlayList.fragment.DetailsPlayListFragment
 import com.practicum.playlistmaker.ui.media.fragments.adapter.AlbumsAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -65,7 +66,10 @@ class PlayListFragment : Fragment() {
     }
 
     private fun showContent(content: List<Album>) {
-        adapter = AlbumsAdapter(content, context)
+        adapter = AlbumsAdapter(content,
+            context,
+            {findNavController().navigate(R.id.action_mediaFragment_to_detailsPlayList,
+                DetailsPlayListFragment.createArgs(it.id))})
         binding.recyclerViewAlbums.layoutManager = GridLayoutManager(requireActivity(), 2)
         binding.mediaImagePlaceHolder.visibility = View.GONE
         binding.tvPlaceHolder.visibility = View.GONE
@@ -73,6 +77,8 @@ class PlayListFragment : Fragment() {
         binding.recyclerViewAlbums.adapter = adapter
         adapter.notifyDataSetChanged()
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

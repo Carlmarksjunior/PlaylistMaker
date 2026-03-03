@@ -19,4 +19,8 @@ class FavouritesTracksInteractorImpl(private val favouritesTracksRepository: Fav
     override fun getAllTracks(): Flow<List<Track>> {
         return favouritesTracksRepository.getAllTracks().map { it.reversed() }
     }
+
+    override suspend fun isTrackExists(trackId: String): Boolean {
+        return favouritesTracksRepository.isTrackExists(trackId)
+    }
 }

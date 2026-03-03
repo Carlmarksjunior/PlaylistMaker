@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.ui.main
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
@@ -17,7 +18,7 @@ class RootActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        enableEdgeToEdge()
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.containerView) as NavHostFragment
         val navController = navHostFragment.findNavController()
 
@@ -26,7 +27,9 @@ class RootActivity: AppCompatActivity() {
         navController.addOnDestinationChangedListener { _,destination, _ ->
 
             binding.bottomNavigationView.isVisible = destination.id != R.id.playerFragment &&
-                    destination.id != R.id.playListCreateFragment
+                    destination.id != R.id.playListCreateFragment &&
+                    destination.id != R.id.detailsPlayList &&
+                    destination.id!=R.id.playListRedactFragment
         }
 
     }
